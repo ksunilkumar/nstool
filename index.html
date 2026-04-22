@@ -135,83 +135,186 @@
 
             <!-- Invoice Tab -->
             <section id="invoice" class="tab-content">
-                 <div class="hero-section">
+                <div class="hero-section">
                     <h1>Billing & Document Generators</h1>
-                    <p>Generate professional GST invoices and bills instantly.</p>
+                    <p>Generate professional GST invoices and E-Way bills instantly.</p>
                 </div>
 
-                <div class="invoice-layout">
-                    <div class="card invoice-form-card">
-                        <h3>Invoice Details</h3>
-                        <div class="form-group row">
-                            <div class="half-width">
-                                <label for="invoice-type">Invoice Type</label>
-                                <select id="invoice-type">
-                                    <option value="gst">GST Invoice</option>
-                                    <option value="simple">Simple Bill</option>
-                                    <option value="eway">E-Way Bill</option>
-                                </select>
+                <div class="sub-nav-container">
+                    <nav class="sub-nav">
+                        <button class="sub-nav-btn active" data-target="gst-invoice-panel">Invoice Generator</button>
+                        <button class="sub-nav-btn" data-target="eway-bill-panel">E-Way Bill Generator</button>
+                    </nav>
+                </div>
+
+                <!-- GST INVOICE PANEL -->
+                <div id="gst-invoice-panel" class="sub-panel active">
+                    <div class="invoice-layout">
+                        <div class="card invoice-form-card" id="gst-form">
+                            <div class="form-header-actions">
+                                <h3>GST Invoice Details</h3>
+                                <button class="btn secondary sm" id="gst-load-template">Load Saved</button>
                             </div>
-                            <div class="half-width">
-                                <label for="invoice-num">Invoice Number</label>
-                                <input type="text" id="invoice-num" value="INV-001">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="invoice-to">Billed To</label>
-                            <input type="text" id="invoice-to" placeholder="Client Name">
-                            <input type="text" id="invoice-address" placeholder="Client Address" style="margin-top: 10px;">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Items</label>
-                            <div class="item-list" id="invoice-items">
-                                <div class="item-row">
-                                    <input type="text" class="item-desc" placeholder="Description" style="flex: 2;">
-                                    <input type="number" class="item-qty" placeholder="Qty" value="1">
-                                    <input type="number" class="item-price" placeholder="Price" value="0">
+                            
+                            <!-- Document Details -->
+                            <div class="form-section">
+                                <div class="form-group row">
+                                    <div class="half-width">
+                                        <label>Invoice Number</label>
+                                        <input type="text" id="gst-inv-num" value="INV-001">
+                                    </div>
+                                    <div class="half-width">
+                                        <label>Invoice Date</label>
+                                        <input type="date" id="gst-inv-date">
+                                    </div>
                                 </div>
                             </div>
-                            <button class="btn text-btn" id="add-item-btn">+ Add Item</button>
+
+                            <!-- Supplier Details -->
+                            <div class="form-section">
+                                <h4>Supplier Details</h4>
+                                <div class="form-group row">
+                                    <input type="text" id="gst-sup-name" placeholder="Company Name" class="half-width">
+                                    <input type="text" id="gst-sup-gstin" placeholder="GSTIN" class="half-width">
+                                </div>
+                                <div class="form-group">
+                                    <textarea id="gst-sup-address" placeholder="Company Address" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Buyer Details -->
+                            <div class="form-section">
+                                <h4>Buyer Details</h4>
+                                <div class="form-group row">
+                                    <input type="text" id="gst-buy-name" placeholder="Buyer Name" class="half-width">
+                                    <input type="text" id="gst-buy-gstin" placeholder="Buyer GSTIN" class="half-width">
+                                </div>
+                                <div class="form-group">
+                                    <textarea id="gst-buy-address" placeholder="Billing Address" rows="2"></textarea>
+                                </div>
+                                <div class="form-group checkbox-group">
+                                    <input type="checkbox" id="gst-same-shipping" checked>
+                                    <label for="gst-same-shipping">Shipping Address same as Billing</label>
+                                </div>
+                                <div class="form-group hidden" id="gst-shipping-group">
+                                    <textarea id="gst-ship-address" placeholder="Shipping Address" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Items Table -->
+                            <div class="form-section">
+                                <h4>Items</h4>
+                                <div class="items-table-container">
+                                    <table class="form-items-table" id="gst-items-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Item Name</th>
+                                                <th>HSN/SAC</th>
+                                                <th>Qty</th>
+                                                <th>Rate</th>
+                                                <th>GST %</th>
+                                                <th>Amount</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="gst-items-body">
+                                            <!-- Dynamic Rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button class="btn text-btn mt-2" id="gst-add-item-btn">+ Add Item</button>
+                            </div>
+
+                            <!-- Calculations & Tax Type -->
+                            <div class="form-section">
+                                <div class="form-group row">
+                                    <div class="half-width">
+                                        <label>Tax Type</label>
+                                        <select id="gst-tax-type">
+                                            <option value="cgst_sgst">CGST + SGST (Intra-state)</option>
+                                            <option value="igst">IGST (Inter-state)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Toggles & Optional Fields -->
+                            <div class="form-section">
+                                <h4>Optional Details</h4>
+                                <div class="toggles-grid">
+                                    <div class="toggle-item">
+                                        <input type="checkbox" id="tgl-bank" checked> <label for="tgl-bank">Bank Details</label>
+                                    </div>
+                                    <div class="toggle-item">
+                                        <input type="checkbox" id="tgl-contact" checked> <label for="tgl-contact">Contact Details</label>
+                                    </div>
+                                    <div class="toggle-item">
+                                        <input type="checkbox" id="tgl-notes" checked> <label for="tgl-notes">Notes/Terms</label>
+                                    </div>
+                                    <div class="toggle-item">
+                                        <input type="checkbox" id="tgl-sign" checked> <label for="tgl-sign">Signature</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons mt-4">
+                                <button class="btn primary full-width" id="gst-generate-pdf">Export as PDF</button>
+                                <button class="btn secondary full-width mt-2" id="gst-save-template">Save as Template</button>
+                            </div>
                         </div>
-                        <div class="action-buttons">
-                            <button class="btn primary" id="generate-pdf-btn">Export as PDF</button>
-                            <button class="btn secondary" id="save-template-btn">Save Template</button>
+
+                        <!-- Preview Card -->
+                        <div class="card invoice-preview-card">
+                            <div id="printable-gst-invoice" class="print-container">
+                                <!-- Dynamic Preview rendered by JS -->
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="card invoice-preview-card" id="printable-invoice">
-                        <div class="preview-header">
-                            <h2 id="prev-inv-title">INVOICE</h2>
-                            <p>#<span id="prev-inv-num">INV-001</span></p>
-                        </div>
-                        <div class="preview-body">
-                            <p class="bill-to-label"><strong>Billed To:</strong></p>
-                            <p id="prev-inv-to">Client Name</p>
-                            <p id="prev-inv-add" class="text-sm text-muted">Client Address</p>
+                <!-- E-WAY BILL PANEL -->
+                <div id="eway-bill-panel" class="sub-panel">
+                    <div class="invoice-layout">
+                        <div class="card invoice-form-card" id="eway-form">
+                            <div class="form-header-actions">
+                                <h3>E-Way Bill Details</h3>
+                            </div>
                             
-                            <table class="preview-table">
-                                <thead>
-                                    <tr>
-                                        <th>Description</th>
-                                        <th class="text-right">Qty</th>
-                                        <th class="text-right">Price</th>
-                                        <th class="text-right">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="prev-items-body">
-                                    <tr>
-                                        <td>Sample Service</td>
-                                        <td class="text-right">1</td>
-                                        <td class="text-right">$0.00</td>
-                                        <td class="text-right">$0.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="preview-total-container">
-                                <div class="preview-total">
-                                    <strong>Total: <span id="prev-total-amt">$0.00</span></strong>
+                            <div class="form-section">
+                                <div class="form-group row">
+                                    <div class="half-width">
+                                        <label>E-Way Bill No.</label>
+                                        <input type="text" id="ewb-num" value="EWB-001">
+                                    </div>
+                                    <div class="half-width">
+                                        <label>Date</label>
+                                        <input type="date" id="ewb-date">
+                                    </div>
                                 </div>
+                            </div>
+
+                            <!-- Transport Details -->
+                            <div class="form-section">
+                                <h4>Transport Details</h4>
+                                <div class="form-group row">
+                                    <input type="text" id="ewb-transporter" placeholder="Transporter Name" class="half-width">
+                                    <input type="text" id="ewb-vehicle" placeholder="Vehicle Number" class="half-width">
+                                </div>
+                                <div class="form-group row">
+                                    <input type="text" id="ewb-mode" placeholder="Mode (Road, Rail, Air)" class="half-width">
+                                    <input type="number" id="ewb-distance" placeholder="Distance (KM)" class="half-width">
+                                </div>
+                            </div>
+
+                            <div class="action-buttons mt-4">
+                                <button class="btn primary full-width" id="ewb-generate-pdf">Export E-Way Bill PDF</button>
+                            </div>
+                        </div>
+
+                        <!-- Preview Card -->
+                        <div class="card invoice-preview-card">
+                            <div id="printable-eway-bill" class="print-container">
+                                <!-- Dynamic Preview rendered by JS -->
                             </div>
                         </div>
                     </div>
@@ -232,7 +335,20 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        if (window['pdfjs-dist/build/pdf']) {
+            pdfjsLib = window['pdfjs-dist/build/pdf'];
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="utils.js" defer></script>
+    <script src="barcode.js" defer></script>
+    <script src="invoice.js" defer></script>
+    <script src="ewaybill.js" defer></script>
     <script src="ads.js" defer></script>
     <script src="app.js" defer></script>
 </body>
