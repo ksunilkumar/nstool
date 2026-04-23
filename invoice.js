@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleContact = document.getElementById('tgl-contact');
     const toggleNotes = document.getElementById('tgl-notes');
     const toggleSign = document.getElementById('tgl-sign');
+    const toggleSup = document.getElementById('tgl-gst-sup');
+    const toggleBuy = document.getElementById('tgl-gst-buy');
+    const toggleItems = document.getElementById('tgl-gst-items');
+    const toggleQr = document.getElementById('tgl-gst-qr');
 
     // Toggle Shipping Address
     sameShippingCheckbox.addEventListener('change', (e) => {
@@ -47,16 +51,18 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePreview();
     }
 
-    addItemBtn.addEventListener('click', () => addRow());
+    if (addItemBtn) addItemBtn.addEventListener('click', () => addRow());
 
     // Initialize with one row if empty
-    if(itemsBody.children.length === 0) addRow();
+    if(itemsBody && itemsBody.children.length === 0) addRow();
 
     // Inputs binding
     const allInputs = document.querySelectorAll('#gst-form input:not(.item-row input), #gst-form textarea, #gst-form select');
     allInputs.forEach(inp => inp.addEventListener('input', updatePreview));
 
     function updatePreview() {
+        if (!printContainer) return;
+        
         // Collect Data
         const invNum = document.getElementById('gst-inv-num').value || 'INV-001';
         const invDate = document.getElementById('gst-inv-date').value;
@@ -121,106 +127,121 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Build HTML
         let html = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px;">
-                <div>
-                    <h2 style="margin:0; font-size: 24px;">TAX INVOICE</h2>
-                    <p style="margin:5px 0 0; color: #64748b;">Invoice No: <strong>${invNum}</strong></p>
-                    <p style="margin:0; color: #64748b;">Date: <strong>${invDate || 'N/A'}</strong></p>
-                </div>
-                <div style="text-align: right;">
-                    <svg id="gst-barcode"></svg>
-                </div>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
-                <div style="flex: 1; padding-right: 20px;">
-                    <h4 style="margin:0 0 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">Supplier</h4>
-                    <p style="margin:0;"><strong>${supName || 'Company Name'}</strong></p>
-                    <p style="margin:5px 0; font-size: 0.9em; color: #475569;">${supAddress || 'Address'}</p>
-                    <p style="margin:0; font-size: 0.9em;">GSTIN: <strong>${supGstin || 'N/A'}</strong></p>
-                </div>
-                <div style="flex: 1; padding-left: 20px;">
-                    <h4 style="margin:0 0 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">Billed To</h4>
-                    <p style="margin:0;"><strong>${buyName || 'Buyer Name'}</strong></p>
-                    <p style="margin:5px 0; font-size: 0.9em; color: #475569;">${buyAddress || 'Address'}</p>
-                    <p style="margin:0; font-size: 0.9em;">GSTIN: <strong>${buyGstin || 'N/A'}</strong></p>
-                </div>
-            </div>
-
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9em;">
-                <thead>
-                    <tr style="background-color: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
-                        <th style="text-align:left; padding:8px;">Description</th>
-                        <th style="text-align:left; padding:8px;">HSN/SAC</th>
-                        <th style="text-align:right; padding:8px;">Qty</th>
-                        <th style="text-align:right; padding:8px;">Rate</th>
-                        <th style="text-align:right; padding:8px;">Taxable</th>
-                        <th style="text-align:right; padding:8px;">GST%</th>
-                        ${taxType === 'igst' ? `<th style="text-align:right; padding:8px;">IGST</th>` : `<th style="text-align:right; padding:8px;">CGST</th><th style="text-align:right; padding:8px;">SGST</th>`}
-                        <th style="text-align:right; padding:8px;">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${itemsHtml || '<tr><td colspan="9" style="text-align:center; padding: 20px;">No items</td></tr>'}
-                </tbody>
-            </table>
-            
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
-                <table style="width: 300px; border-collapse: collapse;">
-                    <tr>
-                        <td style="padding: 5px;">Total Taxable:</td>
-                        <td style="text-align:right; padding: 5px;">₹${totalTaxable.toFixed(2)}</td>
-                    </tr>
-                    ${taxType === 'igst' ? `
-                    <tr>
-                        <td style="padding: 5px;">IGST:</td>
-                        <td style="text-align:right; padding: 5px;">₹${totalIGST.toFixed(2)}</td>
-                    </tr>` : `
-                    <tr>
-                        <td style="padding: 5px;">CGST:</td>
-                        <td style="text-align:right; padding: 5px;">₹${totalCGST.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 5px;">SGST:</td>
-                        <td style="text-align:right; padding: 5px;">₹${totalSGST.toFixed(2)}</td>
-                    </tr>`}
-                    <tr style="font-size: 1.1em; font-weight: bold; border-top: 1px solid #cbd5e1;">
-                        <td style="padding: 10px 5px;">Grand Total:</td>
-                        <td style="text-align:right; padding: 10px 5px;">₹${grandTotal.toFixed(2)}</td>
-                    </tr>
-                </table>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; font-size: 0.85em; color: #475569;">
-                <div style="flex: 2; padding-right: 20px;">
-                    ${toggleBank.checked ? `
-                    <div style="margin-bottom: 15px;">
-                        <strong>Bank Details</strong><br>
-                        Bank Name: Your Bank<br>
-                        A/C No: 1234567890<br>
-                        IFSC: ABCD0123456
-                    </div>` : ''}
-                    ${toggleNotes.checked ? `
+            <div style="font-family: 'Inter', sans-serif; padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px;">
                     <div>
-                        <strong>Terms & Conditions</strong><br>
-                        1. Goods once sold will not be taken back.<br>
-                        2. Subject to local jurisdiction.
-                    </div>` : ''}
+                        <h2 style="margin:0; font-size: 24px; color: #1e293b; font-weight: 700;">TAX INVOICE</h2>
+                        <p style="margin:5px 0 0; color: #64748b;">Invoice No: <strong>${invNum}</strong></p>
+                        <p style="margin:0; color: #64748b;">Date: <strong>${invDate || 'N/A'}</strong></p>
+                    </div>
+                    <div style="text-align: right; min-height: 50px;">
+                        ${toggleQr.checked ? '<div id="gst-qrcode" style="width: 80px; height: 80px; display: inline-block;"></div>' : ''}
+                    </div>
                 </div>
-                <div style="flex: 1; text-align: center;">
-                    ${toggleSign.checked ? `
-                    <div style="margin-top: 40px; border-top: 1px solid #000; display: inline-block; padding-top: 5px;">
-                        Authorized Signatory
-                    </div>` : ''}
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 30px; gap: 20px;">
+                    ${toggleSup.checked ? `
+                    <div style="flex: 1; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <h4 style="margin:0 0 10px; color: #94a3b8; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Supplier</h4>
+                        <p style="margin:0; font-size: 15px; color: #1e293b; font-weight: 600;">${supName || 'Company Name'}</p>
+                        <p style="margin:5px 0; font-size: 13px; color: #475569;">${supAddress || 'Address'}</p>
+                        <p style="margin:0; font-size: 13px;">GSTIN: <strong>${supGstin || 'N/A'}</strong></p>
+                    </div>` : '<div style="flex: 1;"></div>'}
+                    
+                    ${toggleBuy.checked ? `
+                    <div style="flex: 1; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <h4 style="margin:0 0 10px; color: #94a3b8; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Billed To</h4>
+                        <p style="margin:0; font-size: 15px; color: #1e293b; font-weight: 600;">${buyName || 'Buyer Name'}</p>
+                        <p style="margin:5px 0; font-size: 13px; color: #475569;">${buyAddress || 'Address'}</p>
+                        <p style="margin:0; font-size: 13px;">GSTIN: <strong>${buyGstin || 'N/A'}</strong></p>
+                    </div>` : '<div style="flex: 1;"></div>'}
+                </div>
+
+                ${toggleItems.checked ? `
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9em;">
+                    <thead>
+                        <tr style="background-color: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
+                            <th style="text-align:left; padding:10px;">Description</th>
+                            <th style="text-align:left; padding:10px;">HSN/SAC</th>
+                            <th style="text-align:right; padding:10px;">Qty</th>
+                            <th style="text-align:right; padding:10px;">Rate</th>
+                            <th style="text-align:right; padding:10px;">Taxable</th>
+                            <th style="text-align:right; padding:10px;">GST%</th>
+                            ${taxType === 'igst' ? `<th style="text-align:right; padding:10px;">IGST</th>` : `<th style="text-align:right; padding:10px;">CGST</th><th style="text-align:right; padding:10px;">SGST</th>`}
+                            <th style="text-align:right; padding:10px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml || '<tr><td colspan="9" style="text-align:center; padding: 20px;">No items</td></tr>'}
+                    </tbody>
+                </table>
+                
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
+                    <table style="width: 300px; border-collapse: collapse; font-size: 0.95em;">
+                        <tr>
+                            <td style="padding: 5px;">Total Taxable:</td>
+                            <td style="text-align:right; padding: 5px;">₹${totalTaxable.toFixed(2)}</td>
+                        </tr>
+                        ${taxType === 'igst' ? `
+                        <tr>
+                            <td style="padding: 5px;">IGST:</td>
+                            <td style="text-align:right; padding: 5px;">₹${totalIGST.toFixed(2)}</td>
+                        </tr>` : `
+                        <tr>
+                            <td style="padding: 5px;">CGST:</td>
+                            <td style="text-align:right; padding: 5px;">₹${totalCGST.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px;">SGST:</td>
+                            <td style="text-align:right; padding: 5px;">₹${totalSGST.toFixed(2)}</td>
+                        </tr>`}
+                        <tr style="font-size: 1.1em; font-weight: 700; border-top: 1px solid #cbd5e1; color: #0f172a;">
+                            <td style="padding: 10px 5px;">Grand Total:</td>
+                            <td style="text-align:right; padding: 10px 5px; color: #3b82f6;">₹${grandTotal.toFixed(2)}</td>
+                        </tr>
+                    </table>
+                </div>` : ''}
+
+                <div style="display: flex; justify-content: space-between; font-size: 0.85em; color: #475569;">
+                    <div style="flex: 2; padding-right: 20px;">
+                        ${toggleBank.checked ? `
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #1e293b;">Bank Details</strong><br>
+                            Bank Name: Your Bank<br>
+                            A/C No: 1234567890<br>
+                            IFSC: ABCD0123456
+                        </div>` : ''}
+                        
+                        ${toggleContact.checked ? `
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #1e293b;">Contact Details</strong><br>
+                            Email: contact@example.com<br>
+                            Phone: +91 9876543210
+                        </div>` : ''}
+
+                        ${toggleNotes.checked ? `
+                        <div>
+                            <strong style="color: #1e293b;">Terms & Conditions</strong><br>
+                            1. Goods once sold will not be taken back.<br>
+                            2. Subject to local jurisdiction.
+                        </div>` : ''}
+                    </div>
+                    <div style="flex: 1; text-align: center; display: flex; align-items: flex-end; justify-content: center;">
+                        ${toggleSign.checked ? `
+                        <div style="margin-top: 40px; border-top: 1px solid #94a3b8; display: inline-block; padding-top: 5px; width: 150px;">
+                            Authorized Signatory
+                        </div>` : ''}
+                    </div>
                 </div>
             </div>
         `;
 
         printContainer.innerHTML = html;
 
-        // Generate Barcode
-        if(window.barcodeUtils && invNum) {
-            window.barcodeUtils.generateBarcode('gst-barcode', invNum);
+        // Generate Barcode/QR
+        if(toggleQr.checked && window.barcodeUtils && invNum) {
+            // we use QR for visual modern touch
+            window.barcodeUtils.generateQR('gst-qrcode', `GST Invoice: ${invNum}\nTotal: ₹${grandTotal.toFixed(2)}`);
         }
     }
 
@@ -259,12 +280,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Generate PDF via standard print mechanism
-    document.getElementById('gst-generate-pdf').addEventListener('click', () => {
-        const titleOrig = document.title;
-        const invNum = document.getElementById('gst-inv-num').value || 'Invoice';
-        document.title = `${invNum}_GST_Invoice`;
-        window.print();
-        document.title = titleOrig;
-    });
-
+    const genPdfBtn = document.getElementById('gst-generate-pdf');
+    if(genPdfBtn) {
+        genPdfBtn.addEventListener('click', () => {
+            const titleOrig = document.title;
+            const invNum = document.getElementById('gst-inv-num').value || 'Invoice';
+            document.title = `${invNum}_GST_Invoice`;
+            window.print();
+            document.title = titleOrig;
+        });
+    }
 });
