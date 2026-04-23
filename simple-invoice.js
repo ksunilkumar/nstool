@@ -11,19 +11,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const tr = document.createElement('tr');
         tr.className = 'item-row';
         tr.innerHTML = `
-            <td style="width: 70%;"><input type="text" class="item-desc full-width" placeholder="Description" value="${data ? data.desc : ''}"></td>
-            <td style="width: 25%;"><input type="number" class="item-amt full-width" placeholder="Amount" value="${data ? data.amt : '0'}"></td>
+            <td style="width: 50%;"><input type="text" class="item-desc full-width" placeholder="Description" value="${data ? data.desc : ''}"></td>
+            <td style="width: 15%;"><input type="number" class="item-qty full-width" placeholder="Qty" value="${data ? data.qty : '1'}" min="1"></td>
+            <td style="width: 20%;"><input type="number" class="item-rate full-width" placeholder="Rate" value="${data ? data.rate : '0'}" min="0"></td>
+            <td style="width: 10%; font-weight: 600; text-align: right;" class="item-amount-display">₹0.00</td>
             <td style="width: 5%;"><button class="btn text-btn remove-btn" style="color: #ef4444; padding:0;">X</button></td>
         `;
         itemsBody.appendChild(tr);
 
-        // Bind events
-        tr.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updatePreview));
+        // Bind calculation events
+        const qtyInp = tr.querySelector('.item-qty');
+        const rateInp = tr.querySelector('.item-rate');
+        const amtDisp = tr.querySelector('.item-amount-display');
+
+        function calcRow() {
+            const qty = parseFloat(qtyInp.value) || 0;
+            const rate = parseFloat(rateInp.value) || 0;
+            amtDisp.innerText = '₹' + (qty * rate).toFixed(2);
+        }
+
+        qtyInp.addEventListener('input', calcRow);
+        rateInp.addEventListener('input', calcRow);
+        calcRow();
+
         tr.querySelector('.remove-btn').addEventListener('click', () => {
             tr.remove();
-            updatePreview();
         });
-        updatePreview();
     }
 
     if (addItemBtn) addItemBtn.addEventListener('click', () => addRow());
@@ -31,9 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize with one row if empty
     if(itemsBody && itemsBody.children.length === 0) addRow();
 
-    // Inputs binding
-    const allInputs = document.querySelectorAll('#simple-form input:not(.item-row input), #simple-form textarea');
-    allInputs.forEach(inp => inp.addEventListener('input', updatePreview));
+    // Removed global input binding to prevent live updates
 
     function updatePreview() {
         if (!printContainer) return;
@@ -41,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Collect Data
         const invNum = document.getElementById('sim-inv-num').value || 'INV-S01';
         const invDate = document.getElementById('sim-inv-date').value || new Date().toISOString().split('T')[0];
+        const billerDetails = document.getElementById('sim-biller-details').value.replace(/\n/g, '<br>');
         const buyDetails = document.getElementById('sim-buy-details').value.replace(/\n/g, '<br>');
         
         // Calculate items
@@ -50,16 +62,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         rows.forEach(row => {
             const desc = row.querySelector('.item-desc').value || '';
-            const amt = parseFloat(row.querySelector('.item-amt').value) || 0;
+            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+            const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+            const amt = qty * rate;
             
-            grandTotal += amt;
-
-            itemsHtml += `
-                <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${desc}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">₹${amt.toFixed(2)}</td>
-                </tr>
-            `;
+            if (desc || amt > 0) {
+                grandTotal += amt;
+                itemsHtml += `
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${desc}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">${qty}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">₹${rate.toFixed(2)}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">₹${amt.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
         });
 
         // Build HTML
@@ -74,20 +91,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${toggleQr.checked ? '<div style="text-align: right;"><div id="sim-qrcode" style="width: 80px; height: 80px; display: inline-block;"></div></div>' : ''}
                 </div>
                 
-                <div style="margin-bottom: 30px;">
-                    <h4 style="margin:0 0 10px; color: #94a3b8; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Billed To</h4>
-                    <p style="margin:0; font-size: 16px; color: #1e293b;">${buyDetails || 'Client Name<br>Address'}</p>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                    <div style="width: 48%;">
+                        <h4 style="margin:0 0 10px; color: #94a3b8; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">From</h4>
+                        <p style="margin:0; font-size: 15px; color: #1e293b;">${billerDetails || 'Your Name/Company<br>Address'}</p>
+                    </div>
+                    <div style="width: 48%;">
+                        <h4 style="margin:0 0 10px; color: #94a3b8; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Billed To</h4>
+                        <p style="margin:0; font-size: 15px; color: #1e293b;">${buyDetails || 'Client Name<br>Address'}</p>
+                    </div>
                 </div>
 
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
                     <thead>
                         <tr style="background-color: #f8fafc;">
                             <th style="text-align:left; padding:12px 10px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Description</th>
+                            <th style="text-align:center; padding:12px 10px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Qty</th>
+                            <th style="text-align:right; padding:12px 10px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Rate</th>
                             <th style="text-align:right; padding:12px 10px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Amount</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${itemsHtml || '<tr><td colspan="2" style="text-align:center; padding: 20px;">No items</td></tr>'}
+                        ${itemsHtml || '<tr><td colspan="4" style="text-align:center; padding: 20px;">No items</td></tr>'}
                     </tbody>
                 </table>
                 
@@ -110,18 +135,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Call once to render initial state
+    // Manual Preview Trigger
+    const previewBtn = document.getElementById('sim-preview-btn');
+    if (previewBtn) {
+        previewBtn.addEventListener('click', () => {
+            updatePreview();
+            
+            // On mobile, scroll down to the preview section smoothly
+            if (window.innerWidth <= 768) {
+                document.getElementById('printable-simple-invoice').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
+    // Call once to render initial empty state
     setTimeout(updatePreview, 100);
 
-    // Generate PDF via standard print mechanism
+    // Generate PDF via html2pdf
     const generateBtn = document.getElementById('sim-generate-pdf');
     if (generateBtn) {
         generateBtn.addEventListener('click', () => {
-            const titleOrig = document.title;
             const invNum = document.getElementById('sim-inv-num').value || 'SimpleInvoice';
-            document.title = `${invNum}_Invoice`;
-            window.print();
-            document.title = titleOrig;
+            const element = document.getElementById('printable-simple-invoice');
+
+            generateBtn.innerText = "Generating PDF...";
+            generateBtn.disabled = true;
+
+            const opt = {
+                margin:       10,
+                filename:     `${invNum}_Invoice.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                generateBtn.innerText = "Export Simple Invoice PDF";
+                generateBtn.disabled = false;
+            }).catch(err => {
+                console.error("PDF Generation failed", err);
+                alert("Failed to generate PDF. Please try again.");
+                generateBtn.innerText = "Export Simple Invoice PDF";
+                generateBtn.disabled = false;
+            });
         });
     }
 });

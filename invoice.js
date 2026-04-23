@@ -24,8 +24,23 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             shippingGroup.classList.remove('hidden');
         }
-        updatePreview();
     });
+
+    // Toggle Additional Sections visibility
+    function toggleSection(checkbox, sectionId) {
+        if (!checkbox) return;
+        checkbox.addEventListener('change', (e) => {
+            const el = document.getElementById(sectionId);
+            if(el) {
+                if(e.target.checked) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            }
+        });
+    }
+    toggleSection(toggleBank, 'section-bank-details');
+    toggleSection(toggleContact, 'section-contact-details');
+    toggleSection(toggleNotes, 'section-notes-details');
+    toggleSection(toggleSign, 'section-sign-details');
 
     // Add Item Row
     function addRow(data = null) {
@@ -42,13 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         itemsBody.appendChild(tr);
 
-        // Bind events
-        tr.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updatePreview));
+        // Removed live input binding to prevent auto-updating
         tr.querySelector('.remove-btn').addEventListener('click', () => {
             tr.remove();
-            updatePreview();
         });
-        updatePreview();
     }
 
     if (addItemBtn) addItemBtn.addEventListener('click', () => addRow());
@@ -56,9 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize with one row if empty
     if(itemsBody && itemsBody.children.length === 0) addRow();
 
-    // Inputs binding
-    const allInputs = document.querySelectorAll('#gst-form input:not(.item-row input), #gst-form textarea, #gst-form select');
-    allInputs.forEach(inp => inp.addEventListener('input', updatePreview));
+    // Removed global input binding
 
     function updatePreview() {
         if (!printContainer) return;
@@ -78,6 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const shipAddress = isSameShip ? buyAddress : document.getElementById('gst-ship-address').value.replace(/\n/g, '<br>');
 
         const taxType = taxTypeSelect.value;
+        
+        // Collect Additional Details
+        const bankName = document.getElementById('gst-bank-name')?.value || 'Your Bank Name';
+        const bankAcc = document.getElementById('gst-bank-acc')?.value || '1234567890';
+        const bankIfsc = document.getElementById('gst-bank-ifsc')?.value || 'ABCD0123456';
+        const bankBranch = document.getElementById('gst-bank-branch')?.value || 'Main Branch';
+        
+        const contactEmail = document.getElementById('gst-contact-email')?.value || 'contact@example.com';
+        const contactPhone = document.getElementById('gst-contact-phone')?.value || '+91 9876543210';
+        
+        const notesText = document.getElementById('gst-notes-text')?.value.replace(/\n/g, '<br>') || '1. Goods once sold will not be taken back.<br>2. Subject to local jurisdiction.';
+        const signName = document.getElementById('gst-sign-name')?.value || 'Authorized Signatory';
         
         // Calculate items
         const rows = document.querySelectorAll('#gst-items-body tr');
@@ -207,29 +229,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${toggleBank.checked ? `
                         <div style="margin-bottom: 15px;">
                             <strong style="color: #1e293b;">Bank Details</strong><br>
-                            Bank Name: Your Bank<br>
-                            A/C No: 1234567890<br>
-                            IFSC: ABCD0123456
+                            Bank Name: ${bankName}<br>
+                            A/C No: ${bankAcc}<br>
+                            IFSC: ${bankIfsc}<br>
+                            Branch: ${bankBranch}
                         </div>` : ''}
                         
                         ${toggleContact.checked ? `
                         <div style="margin-bottom: 15px;">
                             <strong style="color: #1e293b;">Contact Details</strong><br>
-                            Email: contact@example.com<br>
-                            Phone: +91 9876543210
+                            Email: ${contactEmail}<br>
+                            Phone: ${contactPhone}
                         </div>` : ''}
 
                         ${toggleNotes.checked ? `
                         <div>
                             <strong style="color: #1e293b;">Terms & Conditions</strong><br>
-                            1. Goods once sold will not be taken back.<br>
-                            2. Subject to local jurisdiction.
+                            ${notesText}
                         </div>` : ''}
                     </div>
                     <div style="flex: 1; text-align: center; display: flex; align-items: flex-end; justify-content: center;">
                         ${toggleSign.checked ? `
                         <div style="margin-top: 40px; border-top: 1px solid #94a3b8; display: inline-block; padding-top: 5px; width: 150px;">
-                            Authorized Signatory
+                            ${signName}
                         </div>` : ''}
                     </div>
                 </div>
@@ -245,8 +267,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Call once to render initial state
+    // Call once to render initial empty state
     setTimeout(updatePreview, 100);
+
+    // Manual Preview Binding
+    const previewBtn = document.getElementById('gst-preview-btn');
+    if (previewBtn) {
+        previewBtn.addEventListener('click', () => {
+            updatePreview();
+            
+            if (window.innerWidth <= 768) {
+                document.getElementById('printable-gst-invoice').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
 
     // Save and Load
     document.getElementById('gst-save-template').addEventListener('click', () => {
@@ -279,15 +313,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Generate PDF via standard print mechanism
+    // Generate PDF via html2pdf
     const genPdfBtn = document.getElementById('gst-generate-pdf');
     if(genPdfBtn) {
         genPdfBtn.addEventListener('click', () => {
-            const titleOrig = document.title;
             const invNum = document.getElementById('gst-inv-num').value || 'Invoice';
-            document.title = `${invNum}_GST_Invoice`;
-            window.print();
-            document.title = titleOrig;
+            const element = document.getElementById('printable-gst-invoice');
+            
+            genPdfBtn.innerText = "Generating PDF...";
+            genPdfBtn.disabled = true;
+
+            const opt = {
+                margin:       10,
+                filename:     `${invNum}_GST_Invoice.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                genPdfBtn.innerText = "Export as PDF";
+                genPdfBtn.disabled = false;
+            }).catch(err => {
+                console.error("PDF Generation failed", err);
+                alert("Failed to generate PDF. Please try again.");
+                genPdfBtn.innerText = "Export as PDF";
+                genPdfBtn.disabled = false;
+            });
         });
     }
 });

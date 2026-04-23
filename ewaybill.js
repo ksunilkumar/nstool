@@ -9,11 +9,28 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const ewbPrintContainer = document.getElementById('printable-eway-bill');
 
-    // Inputs binding
-    const ewbInputs = document.querySelectorAll('#eway-form input');
-    ewbInputs.forEach(inp => inp.addEventListener('input', updateEwbPreview));
+    // Removed live input binding
+    // const ewbInputs = document.querySelectorAll('#eway-form input');
+    // ewbInputs.forEach(inp => inp.addEventListener('input', updateEwbPreview));
 
     function updateEwbPreview() {
+        const num = ewbNum.value || 'EWB-001';
+        const date = ewbDate.value || 'N/A';
+        const transporter = ewbTransporter.value || 'Transporter Name';
+        const vehicle = ewbVehicle.value || 'Vehicle No';
+        const mode = ewbMode.value || 'Road';
+        const distance = ewbDistance.value || '0';
+
+        // New Independent Fields
+        const supName = document.getElementById('ewb-sup-name').value || 'Supplier Name';
+        const supGstin = document.getElementById('ewb-sup-gstin').value || 'Supplier GSTIN';
+        const buyName = document.getElementById('ewb-buy-name').value || 'Recipient Name';
+        const buyGstin = document.getElementById('ewb-buy-gstin').value || 'Recipient GSTIN';
+        
+        const invNum = document.getElementById('ewb-inv-num').value || 'INV-000';
+        const invDate = document.getElementById('ewb-inv-date').value || 'N/A';
+        const goodsValue = document.getElementById('ewb-goods-value').value || '0';
+        const hsn = document.getElementById('ewb-hsn').value || 'N/A';
         const num = ewbNum.value || 'EWB-001';
         const date = ewbDate.value || 'N/A';
         const transporter = ewbTransporter.value || 'Transporter Name';
@@ -42,19 +59,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         <tbody>
                             <tr>
                                 <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; width: 35%; color: #64748b;">GSTIN of Supplier</td>
-                                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; width: 65%; color: #0f172a;"><strong>To be linked with Invoice</strong></td>
+                                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; width: 65%; color: #0f172a;"><strong>${supGstin}</strong> (${supName})</td>
                             </tr>
                             <tr>
                                 <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;">GSTIN of Recipient</td>
-                                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #0f172a;"><strong>To be linked with Invoice</strong></td>
+                                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #0f172a;"><strong>${buyGstin}</strong> (${buyName})</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Linked Invoice No.</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #0f172a;"><strong>${invNum}</strong> (Date: ${invDate})</td>
                             </tr>
                             <tr>
                                 <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Value of Goods</td>
-                                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #0f172a;"><strong>To be linked with Invoice</strong></td>
+                                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #0f172a;"><strong>₹${parseFloat(goodsValue).toFixed(2)}</strong></td>
                             </tr>
                             <tr>
                                 <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;">HSN Code</td>
-                                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #0f172a;"><strong>To be linked with Invoice</strong></td>
+                                <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; color: #0f172a;"><strong>${hsn}</strong></td>
                             </tr>
                         </tbody>
                     </table>
@@ -94,15 +115,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Initialize
+    // Initialize empty preview
     setTimeout(updateEwbPreview, 100);
+
+    // Manual Preview
+    const previewBtn = document.getElementById('ewb-preview-btn');
+    if (previewBtn) {
+        previewBtn.addEventListener('click', () => {
+            updateEwbPreview();
+            
+            if (window.innerWidth <= 768) {
+                document.getElementById('printable-eway-bill').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
 
     // Generate PDF
     document.getElementById('ewb-generate-pdf').addEventListener('click', () => {
-        const titleOrig = document.title;
         const num = document.getElementById('ewb-num').value || 'EwayBill';
-        document.title = `${num}_EWay_Bill`;
-        window.print();
-        document.title = titleOrig;
+        const element = document.getElementById('printable-eway-bill');
+        const btn = document.getElementById('ewb-generate-pdf');
+
+        btn.innerText = "Generating PDF...";
+        btn.disabled = true;
+
+        const opt = {
+            margin:       10,
+            filename:     `${num}_EWay_Bill.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            btn.innerText = "Export E-Way Bill PDF";
+            btn.disabled = false;
+        }).catch(err => {
+            console.error("PDF Generation failed", err);
+            alert("Failed to generate PDF. Please try again.");
+            btn.innerText = "Export E-Way Bill PDF";
+            btn.disabled = false;
+        });
     });
 });

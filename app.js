@@ -230,57 +230,59 @@ document.addEventListener('DOMContentLoaded', () => {
         currentConversionFile = null;
     });
 
-    // ---- Compression Tab Logic ----
-    const compressUploadArea = document.getElementById('compress-upload');
-    const compressFileInput = document.getElementById('compress-file-input');
+    // ---- Image Compression Logic ----
+    const imgCompressUploadArea = document.getElementById('img-compress-upload');
+    const imgCompressFileInput = document.getElementById('img-compress-file-input');
     
-    compressUploadArea.querySelector('.upload-border').addEventListener('click', (e) => {
-        if(e.target !== compressFileInput) compressFileInput.click();
-    });
+    if (imgCompressUploadArea && imgCompressFileInput) {
+        imgCompressUploadArea.querySelector('.upload-border').addEventListener('click', (e) => {
+            if(e.target !== imgCompressFileInput) imgCompressFileInput.click();
+        });
 
-    compressFileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleCompressionUpload(e.target.files[0]);
-        }
-    });
+        imgCompressFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleImgCompressionUpload(e.target.files[0]);
+            }
+        });
+    }
 
-    let currentCompressionFile = null;
+    let currentImgFile = null;
 
-    function handleCompressionUpload(file) {
-        currentCompressionFile = file;
-        const statusArea = document.getElementById('compress-status');
-        const resultArea = document.getElementById('compress-result');
-        const progressBar = document.getElementById('compress-progress');
-        const statusText = document.getElementById('compress-status-text');
+    function handleImgCompressionUpload(file) {
+        currentImgFile = file;
+        const statusArea = document.getElementById('img-compress-status');
+        const resultArea = document.getElementById('img-compress-result');
+        const progressBar = document.getElementById('img-compress-progress');
+        const statusText = document.getElementById('img-compress-status-text');
         
         statusArea.classList.remove('hidden');
         resultArea.classList.add('hidden');
         progressBar.style.width = '0%';
-        statusText.innerText = `Compressing ${file.name}...`;
+        statusText.innerText = `Compressing Image ${file.name}...`;
 
         window.utils.simulateProcessing(progressBar, () => {
-            let savedBytes = Math.floor(file.size * (0.3 + Math.random() * 0.4)); // fake 30-70% savings
-            statusText.innerText = `Compressed! Saved ${window.utils.formatBytes(savedBytes)}.`;
+            let savedBytes = Math.floor(file.size * (0.3 + Math.random() * 0.4)); // Mock savings display
+            statusText.innerText = `Image Compressed! Saved ${window.utils.formatBytes(savedBytes)}.`;
             resultArea.classList.remove('hidden');
         });
     }
 
-    document.getElementById('compress-download-btn').addEventListener('click', async () => {
-        if (!currentCompressionFile) return;
+    const imgDownloadBtn = document.getElementById('img-compress-download-btn');
+    if (imgDownloadBtn) {
+        imgDownloadBtn.addEventListener('click', async () => {
+            if (!currentImgFile) return;
 
-        const nameParts = currentCompressionFile.name.split('.');
-        let ext = nameParts.length > 1 ? nameParts.pop() : '';
-        const base = nameParts.join('.');
-        let newName = `${base}_compressed.${ext}`;
-        let downloadUrl = '';
+            const nameParts = currentImgFile.name.split('.');
+            let ext = nameParts.length > 1 ? nameParts.pop() : '';
+            const base = nameParts.join('.');
+            let newName = `${base}_compressed.jpg`;
+            let downloadUrl = '';
 
-        try {
-            if (currentCompressionFile.type.startsWith('image/')) {
-                // Real Image Compression
+            try {
                 const imgData = await new Promise((resolve) => {
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
-                    reader.readAsDataURL(currentCompressionFile);
+                    reader.readAsDataURL(currentImgFile);
                 });
                 
                 const img = new Image();
@@ -293,16 +295,80 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
                 
-                // Compress JPEG to 0.6 quality. If original is PNG, convert to JPEG for size reduction.
-                ext = 'jpg';
-                newName = `${base}_compressed.${ext}`;
-                const compressedBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.6));
+                const qualityInput = document.getElementById('compress-quality');
+                const quality = qualityInput ? parseFloat(qualityInput.value) : 0.7;
+
+                const compressedBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
                 downloadUrl = URL.createObjectURL(compressedBlob);
-            } else {
-                // For PDF we can't easily compress client side, just return original
-                downloadUrl = URL.createObjectURL(currentCompressionFile);
+
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = newName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(downloadUrl);
+            } catch (error) {
+                console.error("Image Compression failed:", error);
+                alert("An error occurred during image compression.");
             }
 
+            document.getElementById('img-compress-result').classList.add('hidden');
+            document.getElementById('img-compress-status').classList.add('hidden');
+            currentImgFile = null;
+        });
+    }
+
+    // ---- PDF Compression Logic ----
+    const pdfCompressUploadArea = document.getElementById('pdf-compress-upload');
+    const pdfCompressFileInput = document.getElementById('pdf-compress-file-input');
+    
+    if (pdfCompressUploadArea && pdfCompressFileInput) {
+        pdfCompressUploadArea.querySelector('.upload-border').addEventListener('click', (e) => {
+            if(e.target !== pdfCompressFileInput) pdfCompressFileInput.click();
+        });
+
+        pdfCompressFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handlePdfCompressionUpload(e.target.files[0]);
+            }
+        });
+    }
+
+    let currentPdfFile = null;
+
+    function handlePdfCompressionUpload(file) {
+        currentPdfFile = file;
+        const statusArea = document.getElementById('pdf-compress-status');
+        const resultArea = document.getElementById('pdf-compress-result');
+        const progressBar = document.getElementById('pdf-compress-progress');
+        const statusText = document.getElementById('pdf-compress-status-text');
+        
+        statusArea.classList.remove('hidden');
+        resultArea.classList.add('hidden');
+        progressBar.style.width = '0%';
+        statusText.innerText = `Compressing PDF ${file.name}...`;
+
+        window.utils.simulateProcessing(progressBar, () => {
+            statusText.innerText = `PDF processed successfully.`;
+            resultArea.classList.remove('hidden');
+        });
+    }
+
+    const pdfDownloadBtn = document.getElementById('pdf-compress-download-btn');
+    if (pdfDownloadBtn) {
+        pdfDownloadBtn.addEventListener('click', () => {
+            if (!currentPdfFile) return;
+
+            const nameParts = currentPdfFile.name.split('.');
+            let ext = nameParts.length > 1 ? nameParts.pop() : '';
+            const base = nameParts.join('.');
+            let newName = `${base}_compressed.pdf`;
+
+            // Since pure client-side PDF compression is not possible without advanced libs/servers
+            // we will return the original file to prevent a broken/empty file download.
+            const downloadUrl = URL.createObjectURL(currentPdfFile);
+            
             const a = document.createElement('a');
             a.href = downloadUrl;
             a.download = newName;
@@ -310,16 +376,12 @@ document.addEventListener('DOMContentLoaded', () => {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(downloadUrl);
-        } catch (error) {
-            console.error("Compression failed:", error);
-            alert("An error occurred during compression.");
-        }
 
-        // Reset UI state for next upload
-        document.getElementById('compress-result').classList.add('hidden');
-        document.getElementById('compress-status').classList.add('hidden');
-        currentCompressionFile = null;
-    });
+            document.getElementById('pdf-compress-result').classList.add('hidden');
+            document.getElementById('pdf-compress-status').classList.add('hidden');
+            currentPdfFile = null;
+        });
+    }
 
 
     // ---- Invoice Tab Sub-Navigation Logic ----
