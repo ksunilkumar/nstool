@@ -86,10 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
         tr.className = 'item-row';
         tr.style.borderBottom = '1px solid #e2e8f0';
         tr.innerHTML = `
-            <td style="padding: 10px;"><input type="text" class="inline-input" style="width:100%; text-align: left;" placeholder="Description"></td>
-            <td style="padding: 10px;"><input type="number" class="inline-input item-qty" style="width:100%; text-align: center;" value="1" min="1"></td>
-            <td style="padding: 10px;"><input type="number" class="inline-input item-rate" style="width:100%; text-align: center;" value="0" min="0"></td>
-            <td style="padding: 10px;"><input type="text" class="inline-input item-amt-display" style="width:100%; text-align: center; font-weight: 600;" value="0" disabled></td>
+            <td style="padding: 10px;"><input type="text" class="inline-input" style="width:100%; text-align: left; box-sizing: border-box;" placeholder="Description"></td>
+            <td style="padding: 10px;"><input type="number" class="inline-input item-qty" style="width:100%; text-align: center; box-sizing: border-box;" value="1" min="1"></td>
+            <td style="padding: 10px;"><input type="number" class="inline-input item-rate" style="width:100%; text-align: center; box-sizing: border-box;" value="0" min="0"></td>
+            <td style="padding: 10px;"><input type="text" class="inline-input item-amt-display" style="width:100%; text-align: center; font-weight: 600; box-sizing: border-box;" value="0" disabled></td>
             <td style="padding: 10px; text-align: center;" class="no-print"><button class="btn text-btn remove-row-btn" style="color: #ef4444; padding:0;">🗑️</button></td>
         `;
         itemsBody.appendChild(tr);
