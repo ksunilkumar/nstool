@@ -1,4 +1,9 @@
+/**
+ * simple-invoice.js
+ * WYSIWYG Simple Invoice — Live calculation, Preview toggle, A4 PDF export
+ */
 document.addEventListener('DOMContentLoaded', () => {
+
     // ---- Logo Upload ----
     const logoUploadBox = document.getElementById('logo-upload-box');
     const logoInput     = document.getElementById('sim-logo-input');
@@ -13,25 +18,26 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.onload = (ev) => {
                 logoPreview.src = ev.target.result;
                 logoPreview.style.display = 'block';
-                const span = logoUploadBox.querySelector('span');
-                if (span) span.style.display = 'none';
+                logoUploadBox.querySelector('span').style.display = 'none';
             };
             reader.readAsDataURL(file);
         });
     }
 
-    // ---- Meta Row Adding ----
+    // ---- Add Custom Meta Rows ----
     const addMetaBtn = document.getElementById('sim-add-meta-btn');
     const metaBody   = document.getElementById('sim-meta-body');
     if (addMetaBtn && metaBody) {
         addMetaBtn.addEventListener('click', () => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="text-align:right;font-weight:600;width:50%;padding:5px;"><input type="text" class="inline-input" style="text-align:right;font-weight:600;width:100%;" value="Custom Field"></td>
+                <td style="text-align:right;font-weight:600;width:50%;padding:5px;">
+                    <input type="text" class="inline-input" style="text-align:right;font-weight:600;width:100%;" value="Custom Field">
+                </td>
                 <td style="padding:5px;">
-                    <div style="display:flex;align-items:center;width:100%;">
-                        <input type="text" class="inline-input" style="text-align:right;flex:1;" placeholder="Value">
-                        <button class="btn text-btn remove-meta-btn no-print" style="color:#ef4444;padding:0 0 0 5px;margin-left:auto;">🗑️</button>
+                    <div style="display:flex;align-items:center;gap:4px;">
+                        <input type="text" class="inline-input" style="flex:1;" placeholder="Value">
+                        <button class="btn text-btn remove-meta-btn no-print" style="color:#ef4444;padding:0;min-width:24px;">✕</button>
                     </div>
                 </td>
             `;
@@ -40,17 +46,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ---- Items Table ----
-    const itemsBody    = document.getElementById('sim-wysiwyg-items-body');
-    const addLineBtn   = document.getElementById('sim-add-line-btn');
-    const totalDisplay = document.getElementById('sim-total-display');
-    const balanceDisplay = document.getElementById('sim-balance-display');
-    const paidToggle   = document.getElementById('sim-paid-toggle');
-    const paidInput    = document.getElementById('sim-paid-input');
+    // ---- Item Table ----
+    const itemsBody  = document.getElementById('sim-wysiwyg-items-body');
+    const addLineBtn = document.getElementById('sim-add-line-btn');
+    const paidToggle = document.getElementById('sim-paid-toggle');
+    const paidInput  = document.getElementById('sim-paid-input');
 
     function calculateTotals() {
         let total = 0;
-        document.querySelectorAll('#sim-wysiwyg-items-body .item-row').forEach(row => {
+        itemsBody?.querySelectorAll('.item-row').forEach(row => {
             const qty  = parseFloat(row.querySelector('.item-qty')?.value)  || 0;
             const rate = parseFloat(row.querySelector('.item-rate')?.value) || 0;
             const amt  = qty * rate;
@@ -66,18 +70,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function addRow() {
+        if (!itemsBody) return;
         const tr = document.createElement('tr');
         tr.className = 'item-row';
-        tr.style.borderBottom = '1px solid #e2e8f0';
+        tr.style.cssText = 'border-bottom:1px solid #e2e8f0;';
         tr.innerHTML = `
-            <td style="padding:8px;"><input type="text" class="inline-input" style="width:100%;box-sizing:border-box;" placeholder="Description"></td>
-            <td style="padding:8px;"><input type="number" class="inline-input item-qty"  style="width:100%;box-sizing:border-box;text-align:center;" value="1" min="1"></td>
-            <td style="padding:8px;"><input type="number" class="inline-input item-rate" style="width:100%;box-sizing:border-box;text-align:center;" value="0" min="0"></td>
-            <td style="padding:8px;"><input type="text"   class="inline-input item-amt-display" style="width:100%;box-sizing:border-box;text-align:right;font-weight:600;" value="0.00" readonly></td>
-            <td style="padding:8px;text-align:center;" class="no-print"><button class="btn text-btn remove-row-btn" style="color:#ef4444;padding:0;">🗑️</button></td>
+            <td style="padding:6px 8px;">
+                <input type="text" class="inline-input" style="width:100%;box-sizing:border-box;" placeholder="Item description">
+            </td>
+            <td style="padding:6px 8px;">
+                <input type="number" class="inline-input item-qty" style="width:100%;box-sizing:border-box;text-align:center;" value="1" min="1">
+            </td>
+            <td style="padding:6px 8px;">
+                <input type="number" class="inline-input item-rate" style="width:100%;box-sizing:border-box;text-align:right;" value="0.00" min="0" step="0.01">
+            </td>
+            <td class="amt-col" style="padding:6px 8px;white-space:nowrap;">
+                <input type="text" class="inline-input item-amt-display" style="width:100%;box-sizing:border-box;text-align:right;font-weight:600;background:transparent;white-space:nowrap;" value="0.00" readonly tabindex="-1">
+            </td>
+            <td style="padding:6px 4px;text-align:center;" class="no-print">
+                <button class="btn text-btn remove-row-btn" style="color:#ef4444;padding:0;font-size:1rem;">✕</button>
+            </td>
         `;
         itemsBody.appendChild(tr);
-        tr.querySelector('.item-qty').addEventListener('input',  calculateTotals);
+        tr.querySelector('.item-qty').addEventListener('input', calculateTotals);
         tr.querySelector('.item-rate').addEventListener('input', calculateTotals);
         tr.querySelector('.remove-row-btn').addEventListener('click', () => { tr.remove(); calculateTotals(); });
         calculateTotals();
@@ -86,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (addLineBtn) addLineBtn.addEventListener('click', addRow);
     if (itemsBody && itemsBody.children.length === 0) { addRow(); addRow(); }
 
+    // Paid Amount toggle
     if (paidToggle && paidInput) {
         paidToggle.addEventListener('change', (e) => {
             if (e.target.checked) {
@@ -105,62 +121,68 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateInput = document.getElementById('sim-current-date-input');
     if (dateInput) dateInput.value = new Date().toLocaleDateString('en-IN');
 
-    // ---- Preview Mode Toggle ----
+    // ---- Preview Toggle ----
     const previewBtn = document.getElementById('sim-preview-btn');
     if (previewBtn) {
         previewBtn.addEventListener('click', () => {
-            const container = document.getElementById('printable-simple-invoice');
-            container.classList.toggle('preview-mode');
-            if (container.classList.contains('preview-mode')) {
-                previewBtn.innerText = 'Exit Preview';
-                previewBtn.classList.replace('secondary', 'primary');
-            } else {
-                previewBtn.innerText = 'Toggle Preview';
-                previewBtn.classList.replace('primary', 'secondary');
-            }
+            const c = document.getElementById('printable-simple-invoice');
+            const on = c.classList.toggle('preview-mode');
+            previewBtn.textContent = on ? 'Exit Preview' : 'Toggle Preview';
         });
     }
 
-    // ---- PDF Export ----
+    // ---- PDF Export (A4-accurate) ----
     const generateBtn = document.getElementById('sim-generate-pdf');
     if (generateBtn) {
-        generateBtn.addEventListener('click', () => {
-            const element = document.getElementById('printable-simple-invoice');
-            generateBtn.innerText = 'Generating PDF...';
-            generateBtn.disabled = true;
+        generateBtn.addEventListener('click', exportPDF);
+    }
 
-            // Apply clean state
-            element.classList.add('preview-mode', 'pdf-exporting');
+    function exportPDF() {
+        const element  = document.getElementById('printable-simple-invoice');
+        const btn      = document.getElementById('sim-generate-pdf');
+        btn.textContent = 'Generating…';
+        btn.disabled    = true;
 
-            // Save original styles
-            const origWidth = element.style.width;
-            const origMaxWidth = element.style.maxWidth;
-            element.style.width = '794px';
-            element.style.maxWidth = '794px';
+        // 1. Apply clean display classes
+        element.classList.add('pdf-exporting', 'preview-mode');
 
-            const opt = {
-                margin:      [10, 10, 10, 10],
-                filename:    'Simple_Invoice.pdf',
-                image:       { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
-                jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+        // 2. Pin element to exact A4 pixel width so html2canvas captures correctly
+        const savedWidth    = element.style.width;
+        const savedMaxWidth = element.style.maxWidth;
+        const savedPadding  = element.style.padding;
+        element.style.width    = '793px';   // A4 exact width at 96dpi
+        element.style.maxWidth = '793px';
+        element.style.padding  = '20px 30px';
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                element.style.width = origWidth;
-                element.style.maxWidth = origMaxWidth;
-                element.classList.remove('preview-mode', 'pdf-exporting');
-                generateBtn.innerText = 'Export Invoice as PDF';
-                generateBtn.disabled = false;
-            }).catch(err => {
+        const opt = {
+            margin:       0,
+            filename:     'Simple_Invoice.pdf',
+            image:        { type: 'jpeg', quality: 1 },
+            html2canvas:  {
+                scale:          2,
+                useCORS:        true,
+                logging:        false,
+                scrollX:        0,
+                scrollY:        0
+            },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        html2pdf().set(opt).from(element).save()
+            .then(() => restoreAfterPDF(element, btn, savedWidth, savedMaxWidth, savedPadding, 'Export Invoice as PDF'))
+            .catch((err) => {
                 console.error('PDF error:', err);
-                alert('Failed to generate PDF. Please try again.');
-                element.style.width = origWidth;
-                element.style.maxWidth = origMaxWidth;
-                element.classList.remove('preview-mode', 'pdf-exporting');
-                generateBtn.innerText = 'Export Invoice as PDF';
-                generateBtn.disabled = false;
+                restoreAfterPDF(element, btn, savedWidth, savedMaxWidth, savedPadding, 'Export Invoice as PDF');
             });
-        });
+    }
+
+    function restoreAfterPDF(el, btn, w, mw, p, label) {
+        el.style.width    = w;
+        el.style.maxWidth = mw;
+        el.style.padding  = p;
+        el.classList.remove('pdf-exporting', 'preview-mode');
+        btn.textContent = label;
+        btn.disabled    = false;
     }
 });

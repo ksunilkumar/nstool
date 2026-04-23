@@ -593,64 +593,108 @@ textarea {
     color: #0f172a;
 }
 
-/* WYSIWYG Invoice Styles */
-.inline-input, .inline-textarea {
+/* ============================================================
+   WYSIWYG Invoice Styles
+   ============================================================ */
+
+.wysiwyg-invoice-card {
+    background: white;
+    padding: 0;
+    overflow: visible;
+}
+
+.wysiwyg-container {
+    background: white;
+    color: #0f172a;
+    font-family: 'Inter', sans-serif;
+    overflow: visible !important;
+    word-break: break-word;
+    box-sizing: border-box;
+}
+
+/* All editable inputs/textareas inside the invoice */
+.inline-input,
+.inline-textarea {
     border: 1px solid #d1fae5;
     background: transparent;
     font-family: inherit;
     font-size: inherit;
     color: inherit;
-    padding: 6px 10px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    padding: 5px 8px;
+    border-radius: 5px;
+    transition: border-color 0.2s ease, background 0.2s ease;
     box-sizing: border-box;
     display: block;
     width: 100%;
-}
-
-.wysiwyg-container {
-    overflow: visible !important;
-    page-break-inside: avoid;
-    color: #0f172a;
+    word-break: break-word;
+    white-space: pre-wrap;
+    overflow: visible;
 }
 
 .inline-textarea {
     resize: none;
     line-height: 1.5;
+    overflow: hidden;
 }
 
-.inline-input:hover, .inline-textarea:hover, .border-hover:hover {
-    border-color: #cbd5e1;
-    background-color: rgba(241, 245, 249, 0.5);
+.inline-input:hover,
+.inline-textarea:hover,
+.border-hover:hover {
+    border-color: #94a3b8;
+    background-color: rgba(241, 245, 249, 0.6);
 }
 
-.inline-input:focus, .inline-textarea:focus {
+.inline-input:focus,
+.inline-textarea:focus {
     outline: none;
     border-color: var(--primary);
     background-color: white;
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.12);
 }
 
-/* Make inputs look normal in dark mode invoice container */
-[data-theme="dark"] .wysiwyg-container .inline-input:focus, 
-[data-theme="dark"] .wysiwyg-container .inline-textarea:focus {
-    color: black;
+/* Title input: large heading style */
+.title-input {
+    font-size: 2rem;
+    font-weight: 700;
+    background: transparent;
+    border-color: transparent;
+    letter-spacing: 0.5px;
 }
+
+/* Bold label inputs */
+.bold-input {
+    font-weight: 600;
+}
+
+/* Items table: fixed layout so columns never break alignment */
+.wysiwyg-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-bottom: 8px;
+    word-break: break-word;
+}
+
+.wysiwyg-items-table th,
+.wysiwyg-items-table td {
+    overflow: hidden;
+    vertical-align: middle;
+    word-break: break-word;
+}
+
+.wysiwyg-items-table .inline-input {
+    padding: 4px 6px;
+    font-size: 0.9em;
+}
+
+/* Dark mode fixes */
 [data-theme="dark"] .wysiwyg-container {
-    color: black !important;
+    color: #0f172a !important;
 }
-[data-theme="dark"] .wysiwyg-container input, 
-[data-theme="dark"] .wysiwyg-container textarea {
-    color: black !important;
-}
-
-.pdf-exporting .no-print {
-    display: none !important;
-}
-.pdf-exporting .inline-input, .pdf-exporting .inline-textarea {
-    border-color: transparent !important;
-    background: transparent !important;
-    box-shadow: none !important;
+[data-theme="dark"] .wysiwyg-container input,
+[data-theme="dark"] .wysiwyg-container textarea,
+[data-theme="dark"] .wysiwyg-container select {
+    color: #0f172a !important;
 }
 
 /* Custom Toggle Switch for Invoice */
@@ -972,7 +1016,9 @@ input:checked + .slider:before {
     font-weight: bold;
 }
 
-/* ---- Preview Mode ---- */
+/* ============================================================
+   Preview Mode — clean document view, borders hidden
+   ============================================================ */
 .preview-mode .no-print {
     display: none !important;
 }
@@ -993,25 +1039,48 @@ input:checked + .slider:before {
 }
 
 .preview-mode .logo-upload-box {
-    border-color: transparent !important;
-    background-color: transparent !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: default;
 }
 
 .preview-mode .switch {
     display: none !important;
 }
 
-/* pdf-exporting: same as preview + hide add-row buttons */
+/* ============================================================
+   PDF Export Mode — same as preview, applied during capture
+   ============================================================ */
+.pdf-exporting.wysiwyg-invoice-card {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    height: auto !important;
+}
+
 .pdf-exporting .no-print {
     display: none !important;
 }
 
 .pdf-exporting input,
+.pdf-exporting input[readonly],
 .pdf-exporting textarea,
 .pdf-exporting select {
     border-color: transparent !important;
     background: transparent !important;
     box-shadow: none !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.pdf-exporting .logo-upload-box {
+    border: none !important;
+    background: transparent !important;
+}
+
+.pdf-exporting .switch {
+    display: none !important;
 }
 
 /* Print CSS */
@@ -1048,4 +1117,62 @@ input:checked + .slider:before {
     body {
         background: white !important;
     }
+}
+
+/* ============================================================
+   Global A4/PDF Safety Rules
+   ============================================================ */
+
+/* Prevent any element inside invoice from causing horizontal overflow */
+.wysiwyg-container * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Inputs that are readonly (amount display) match surrounding text */
+.wysiwyg-container input[readonly] {
+    cursor: default;
+    color: inherit;
+    font-weight: 600;
+}
+
+/* Ensure table inputs don't push columns */
+.wysiwyg-items-table input.inline-input {
+    min-width: 0;
+    width: 100%;
+}
+
+/* Long text wrapping in description/address cells */
+.wysiwyg-container td,
+.wysiwyg-container th {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* Amount display — single line, never wraps */
+.wysiwyg-container .item-amt-display {
+    display: inline-block;
+    font-weight: 600;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: visible;
+}
+
+/* Amount td — prevent wrapping at cell level too */
+.wysiwyg-items-table td.amt-col {
+    white-space: nowrap !important;
+    width: 14% !important;
+    text-align: right;
+}
+
+/* Ensure all summary table values (Total, Balance, Taxes) stay on one line */
+.summary-table td:nth-child(2) {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+}
+
+/* Responsive outer card — never scrolls horizontally on screen */
+.wysiwyg-invoice-card {
+    overflow-x: auto;
 }
