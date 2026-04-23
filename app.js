@@ -29,6 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+    // ---- Mobile Menu Logic ----
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const appNav = document.getElementById('app-nav');
+
+    if (mobileMenuBtn && appNav) {
+        mobileMenuBtn.addEventListener('click', () => {
+            appNav.classList.toggle('open');
+        });
+    }
+
     // ---- Tab Navigation Logic ----
     const navButtons = document.querySelectorAll('.nav-btn');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -43,6 +53,11 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
             const targetId = btn.getAttribute('data-target');
             document.getElementById(targetId).classList.add('active');
+
+            // Close mobile menu if open
+            if (appNav && appNav.classList.contains('open')) {
+                appNav.classList.remove('open');
+            }
         });
     });
 

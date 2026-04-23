@@ -1,11 +1,10 @@
 /**
  * ads.js
- * Handles lazy loading and mock rendering of Google Ads placeholders.
+ * Handles lazy loading and rendering of live Google AdSense slots.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // Simulate fetching ad config/script dynamically
     function initializeAds() {
         console.log("[Ads] Ad engine initialized.");
         
@@ -21,37 +20,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }, {
-            rootMargin: '100px 0px', // Load slightly before it comes into screen
-            threshold: 0.1
+            rootMargin: '200px 0px', // Load before it comes into screen
+            threshold: 0.01
         });
 
         adSlots.forEach(slot => {
-            // For the mock, we will just add a visual placeholder
             adObserver.observe(slot);
         });
     }
 
     function renderAd(element) {
-        // In a real scenario, this is where you'd call googletag.display(id) or push to adsbygoogle array.
-        // For this demo, we just populate the div with text showing it resolved.
-        
         const slotClasses = Array.from(element.classList);
+        let adSlotId = "";
+        let adFormat = "auto";
         let adType = "Unknown Slot";
         
-        if(slotClasses.includes('ad-header')) adType = "Header Ad Banner (728x90)";
-        else if (slotClasses.includes('ad-sidebar')) adType = "Sidebar Ad Unit";
-        else if (slotClasses.includes('ad-in-content')) adType = "In-Content Responsive Ad";
-        else if (slotClasses.includes('ad-footer')) adType = "Footer Ad Banner";
+        // Match the classes to the correct AdSense Slot IDs provided in codeads.txt
+        if(slotClasses.includes('ad-header') || slotClasses.includes('ad-footer')) {
+            // toolbox_horizontal
+            adSlotId = "9438941740";
+            adType = "Horizontal";
+        } else if (slotClasses.includes('ad-sidebar')) {
+            // toolbox_verticle
+            adSlotId = "4228659271";
+            adType = "Vertical";
+        } else if (slotClasses.includes('ad-in-content')) {
+            // toobox_square
+            adSlotId = "8647462611";
+            adType = "Square";
+        }
 
-        // Add a small delay to simulate network request latency
-        setTimeout(() => {
-            element.innerHTML = `<span>${adType}</span>`;
-            element.classList.add('loaded'); // Can use this class to trigger CSS transitions
-        }, 500);
-        
-        console.log(`[Ads] Rendered: ${adType}`);
+        if (adSlotId) {
+            // Remove mock styling classes so it doesn't interfere with real ad rendering
+            element.style.border = "none";
+            element.style.backgroundColor = "transparent";
+
+            // Inject the real Google AdSense <ins> tag
+            element.innerHTML = `
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8663416879714051"
+                     data-ad-slot="${adSlotId}"
+                     data-ad-format="${adFormat}"
+                     data-full-width-responsive="true"></ins>
+            `;
+            
+            // Push the ad to be rendered by Google's script
+            try {
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+                element.classList.add('loaded');
+                console.log(`[Ads] Rendered Live Ad: ${adType} (${adSlotId})`);
+            } catch (e) {
+                console.error("[Ads] Error pushing ad:", e);
+            }
+        }
     }
 
     // Initialize after a small delay to prioritize core content rendering
-    setTimeout(initializeAds, 1000);
+    setTimeout(initializeAds, 500);
 });

@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toolbox - Free Invoice Generator, Image Converter & QR Code Maker</title>
-    <meta name="description" content="Free online toolbox for fast file conversion, image formatting, professional GST invoice & E-Way Bill generation, and advanced QR/Barcode creation.">
-    <meta name="keywords" content="Free Invoice Generator, GST Invoice Maker, E-Way Bill Generator, Online Image Converter, PNG to JPG, JPG to PNG, QR Code Maker, Free Barcode Generator, Document Tools, Utility App">
+    <title>Toolbox - Free Invoice Generator, Image Converter & Document Merger</title>
+    <meta name="description" content="Free online toolbox for fast file conversion, PDF merging, image formatting, professional GST invoice generation, and advanced QR/Barcode creation.">
+    <meta name="keywords" content="Free Invoice Generator, GST Invoice Maker, Merge PDF Free, Image Merger, E-Way Bill Generator, Online Image Converter, Compress PDF, QR Code Maker, Free Barcode Generator">
     <meta name="author" content="Toolbox App">
     <link rel="canonical" href="https://toolbox.nsindia.in/">
     
     <!-- Open Graph / Social -->
     <meta property="og:title" content="Toolbox - Professional Utilities & Billing">
-    <meta property="og:description" content="Generate invoices, convert images, compress files, and create QR codes instantly in your browser.">
+    <meta property="og:description" content="Generate invoices, convert and merge images, merge PDFs, compress files, and create QR codes instantly in your browser.">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Toolbox - Professional Utilities & Billing">
@@ -19,6 +19,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8663416879714051" crossorigin="anonymous"></script>
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -28,7 +31,7 @@
       "name": "Toolbox Online Utilities",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Any",
-      "description": "Free online toolbox for fast file conversion, image formatting, professional GST invoice generation, and advanced QR/Barcode creation.",
+      "description": "Free online toolbox for fast file conversion, PDF merging, image formatting, professional GST invoice generation, and advanced QR/Barcode creation.",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -48,13 +51,24 @@
             </svg>
             <span>Toolbox</span>
         </div>
-        <nav class="app-nav">
+        
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+
+        <nav class="app-nav" id="app-nav">
             <button class="nav-btn active" data-target="convert">Convert</button>
             <button class="nav-btn" data-target="compress">Compress</button>
+            <button class="nav-btn" data-target="merge">Merge Tools</button>
             <button class="nav-btn" data-target="invoice">Invoices</button>
             <button class="nav-btn" data-target="image-tools">Image Tools</button>
             <button class="nav-btn" data-target="generators">Generators</button>
         </nav>
+
         <div class="header-actions">
             <button id="theme-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
                 <svg id="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -115,52 +129,182 @@
                     <h2>Compress & Resize Tools</h2>
                     <p>Optimize your PDFs and Images without losing quality.</p>
                 </div>
-                
-                <div class="columns">
-                    <div class="card column settings-column">
-                        <h3>Settings</h3>
-                        <div class="form-group">
-                            <label for="compress-target">Target Size (KB)</label>
-                            <input type="number" id="compress-target" placeholder="e.g. 500">
-                        </div>
-                        <div class="form-group row">
-                            <div class="half-width">
-                                <label for="resize-w">Width (px)</label>
-                                <input type="number" id="resize-w" placeholder="Auto">
+
+                <div class="sub-nav-container">
+                    <nav class="sub-nav">
+                        <button class="sub-nav-btn active" data-target="img-compress-panel">Image Compression</button>
+                        <button class="sub-nav-btn" data-target="pdf-compress-panel">PDF Compression</button>
+                    </nav>
+                </div>
+
+                <!-- Image Compression Panel -->
+                <div id="img-compress-panel" class="sub-panel active">
+                    <div class="columns">
+                        <div class="card column settings-column">
+                            <h3>Image Settings</h3>
+                            <div class="form-group row">
+                                <div class="half-width">
+                                    <label for="resize-w">Width (px)</label>
+                                    <input type="number" id="resize-w" placeholder="Auto">
+                                </div>
+                                <div class="half-width">
+                                    <label for="resize-h">Height (px)</label>
+                                    <input type="number" id="resize-h" placeholder="Auto">
+                                </div>
                             </div>
-                            <div class="half-width">
-                                <label for="resize-h">Height (px)</label>
-                                <input type="number" id="resize-h" placeholder="Auto">
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="maintain-ratio" checked>
+                                <label for="maintain-ratio">Maintain Aspect Ratio</label>
+                            </div>
+                            <div class="form-group mt-2">
+                                <label>Compression Quality</label>
+                                <input type="range" id="compress-quality" min="0.1" max="1.0" step="0.1" value="0.7" style="width: 100%;">
                             </div>
                         </div>
-                        <div class="form-group checkbox-group">
-                            <input type="checkbox" id="maintain-ratio" checked>
-                            <label for="maintain-ratio">Maintain Aspect Ratio</label>
+                        
+                        <div class="card column compress-upload upload-area" id="img-compress-upload">
+                             <div class="upload-border">
+                                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <h3>Upload Image to Compress</h3>
+                                <p>JPG, PNG, JPEG</p>
+                                <input type="file" id="img-compress-file-input" accept="image/*" hidden>
+                            </div>
+                            <div id="img-compress-status" class="status-area hidden">
+                                <div class="progress-bar"><div id="img-compress-progress" class="progress-fill"></div></div>
+                                <p id="img-compress-status-text" class="status-text">Compressing...</p>
+                            </div>
+                            <div id="img-compress-result" class="result-area hidden">
+                                <button id="img-compress-download-btn" class="btn primary">Download Compressed Image</button>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="card column compress-upload upload-area" id="compress-upload">
-                         <div class="upload-border">
-                            <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                <polyline points="21 15 16 10 5 21"></polyline>
-                            </svg>
-                            <h3>Upload to Compress</h3>
-                            <p>Select an image or PDF</p>
-                            <input type="file" id="compress-file-input" hidden>
+                </div>
+
+                <!-- PDF Compression Panel -->
+                <div id="pdf-compress-panel" class="sub-panel">
+                    <div class="columns">
+                        <div class="card column settings-column">
+                            <h3>PDF Settings</h3>
+                            <div class="form-group">
+                                <label>Optimization Level</label>
+                                <select id="pdf-compress-level">
+                                    <option value="recommended">Recommended (Good Quality/Size Ratio)</option>
+                                    <option value="extreme">Extreme (Low Quality/Smallest Size)</option>
+                                    <option value="less">Less (High Quality/Larger Size)</option>
+                                </select>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Note: PDF Compression works locally via optimization algorithms. Large files may take time.</p>
                         </div>
-                        <div id="compress-status" class="status-area hidden">
-                            <div class="progress-bar"><div id="compress-progress" class="progress-fill"></div></div>
-                            <p id="compress-status-text" class="status-text">Compressing...</p>
-                        </div>
-                        <div id="compress-result" class="result-area hidden">
-                            <button id="compress-download-btn" class="btn primary">Download File</button>
+                        
+                        <div class="card column compress-upload upload-area" id="pdf-compress-upload">
+                             <div class="upload-border">
+                                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                <h3>Upload PDF to Compress</h3>
+                                <p>.pdf</p>
+                                <input type="file" id="pdf-compress-file-input" accept="application/pdf" hidden>
+                            </div>
+                            <div id="pdf-compress-status" class="status-area hidden">
+                                <div class="progress-bar"><div id="pdf-compress-progress" class="progress-fill"></div></div>
+                                <p id="pdf-compress-status-text" class="status-text">Compressing...</p>
+                            </div>
+                            <div id="pdf-compress-result" class="result-area hidden">
+                                <button id="pdf-compress-download-btn" class="btn primary">Download Compressed PDF</button>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <div id="ad-in-content-2" class="ad-slot ad-in-content"></div>
+            </section>
+
+            <!-- Merge Tools Tab -->
+            <section id="merge" class="tab-content">
+                <div class="hero-section">
+                    <h2>Merge Tools</h2>
+                    <p>Combine multiple PDFs or Images into a single file instantly.</p>
+                </div>
+
+                <div class="sub-nav-container">
+                    <nav class="sub-nav">
+                        <button class="sub-nav-btn active" data-target="pdf-merger-panel">PDF Merger</button>
+                        <button class="sub-nav-btn" data-target="img-merger-panel">Image Merger</button>
+                    </nav>
+                </div>
+
+                <!-- PDF Merger Panel -->
+                <div id="pdf-merger-panel" class="sub-panel active">
+                    <div class="card">
+                        <h3>Merge Multiple PDFs</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Upload PDFs, drag to reorder, and merge them securely in your browser.</p>
+                        
+                        <div class="upload-area" id="pdf-merge-upload">
+                            <div class="upload-border" style="min-height: 120px; padding: 1rem;">
+                                <svg class="upload-icon" style="margin-bottom: 0.5rem;" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                                <h4>Add PDFs</h4>
+                                <input type="file" id="pdf-merge-input" accept="application/pdf" multiple hidden>
+                            </div>
+                        </div>
+
+                        <ul id="pdf-merge-list" class="sortable-list" style="list-style: none; padding: 0; margin-top: 1rem;">
+                            <!-- PDF items will be injected here -->
+                        </ul>
+
+                        <div id="pdf-merge-actions" class="hidden" style="margin-top: 1.5rem;">
+                            <button id="pdf-merge-btn" class="btn primary full-width">Merge PDFs</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Merger Panel -->
+                <div id="img-merger-panel" class="sub-panel">
+                    <div class="card">
+                        <h3>Merge Multiple Images</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Combine images horizontally or vertically.</p>
+                        
+                        <div class="form-group row" style="margin-bottom: 1.5rem;">
+                            <div class="half-width">
+                                <label>Merge Direction</label>
+                                <select id="img-merge-direction">
+                                    <option value="vertical">Vertical (Stack)</option>
+                                    <option value="horizontal">Horizontal (Side-by-side)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="upload-area" id="img-merge-upload">
+                            <div class="upload-border" style="min-height: 120px; padding: 1rem;">
+                                <svg class="upload-icon" style="margin-bottom: 0.5rem;" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                                <h4>Add Images</h4>
+                                <input type="file" id="img-merge-input" accept="image/*" multiple hidden>
+                            </div>
+                        </div>
+
+                        <div id="img-merge-preview-container" class="hidden" style="margin-top: 1.5rem; text-align: center;">
+                            <canvas id="img-merge-canvas" style="max-width: 100%; border: 1px solid var(--border); border-radius: 8px;"></canvas>
+                            <button id="img-merge-btn" class="btn primary full-width mt-4">Download Merged Image</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ad-in-content-3" class="ad-slot ad-in-content"></div>
             </section>
 
             <!-- Invoice Tab -->
@@ -588,9 +732,9 @@
                         </div>
                     </div>
                     <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-                        <h4 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">How secure is the Online Image Converter?</h4>
+                        <h4 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">How secure is the Online Image Converter and Merger?</h4>
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <p itemprop="text" style="color: var(--text-muted);">Extremely secure. All conversions (PNG to JPG, JPG to PNG) happen client-side within your browser using the HTML5 Canvas API. No images are uploaded to any server.</p>
+                            <p itemprop="text" style="color: var(--text-muted);">Extremely secure. All conversions and merges happen client-side within your browser. No files are uploaded to any server.</p>
                         </div>
                     </div>
                     <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 1rem;">
@@ -609,15 +753,16 @@
     </div>
 
     <footer class="app-footer">
-        <div class="footer-content">
+        <div id="ad-footer" class="ad-slot ad-footer"></div>
+        <div class="footer-content" style="margin-top: 1rem;">
             <p>&copy; 2026 Toolbox. All rights reserved.</p>
         </div>
-        <div id="ad-footer" class="ad-slot ad-footer"></div>
     </footer>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script>
         if (window['pdfjs-dist/build/pdf']) {
             pdfjsLib = window['pdfjs-dist/build/pdf'];
@@ -633,6 +778,8 @@
     <script src="simple-invoice.js" defer></script>
     <script src="image-tools.js" defer></script>
     <script src="generators.js" defer></script>
+    <script src="pdf-merger.js" defer></script>
+    <script src="image-merger.js" defer></script>
     <script src="ads.js" defer></script>
     <script src="app.js" defer></script>
 </body>

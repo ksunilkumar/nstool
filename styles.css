@@ -95,13 +95,50 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .app-nav {
-    display: none; /* Hide on very small screens, show on md */
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    backdrop-filter: var(--card-backdrop);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem;
     gap: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-@media (min-width: 640px) {
+.app-nav.open {
+    display: flex;
+}
+
+@media (min-width: 768px) {
     .app-nav {
         display: flex;
+        flex-direction: row;
+        position: static;
+        background: transparent;
+        border: none;
+        padding: 0;
+        box-shadow: none;
+    }
+}
+
+.mobile-menu-btn {
+    display: flex;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-right: auto;
+    margin-left: 1rem;
+}
+
+@media (min-width: 768px) {
+    .mobile-menu-btn {
+        display: none;
     }
 }
 
@@ -575,6 +612,7 @@ textarea {
     border-radius: 8px;
     transition: opacity 0.5s ease;
     overflow: hidden;
+    min-height: 60px; /* Prevent layout shift */
 }
 
 .ad-header {
@@ -788,6 +826,49 @@ textarea {
     cursor: pointer;
     font-size: 0.9rem;
     color: var(--text-main);
+}
+
+/* Sortable List for PDF Merge */
+.sortable-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    cursor: grab;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.sortable-item:active {
+    cursor: grabbing;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: scale(1.02);
+}
+
+.sortable-item .drag-handle {
+    color: var(--text-muted);
+    cursor: grab;
+    margin-right: 1rem;
+}
+
+.sortable-item .file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.sortable-item .remove-btn {
+    color: #ef4444;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    font-weight: bold;
 }
 
 /* Print CSS */
