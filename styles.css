@@ -600,12 +600,18 @@ textarea {
     font-family: inherit;
     font-size: inherit;
     color: inherit;
-    padding: 10px 15px;
-    border-radius: 10px;
+    padding: 6px 10px;
+    border-radius: 6px;
     transition: all 0.2s ease;
     box-sizing: border-box;
     display: block;
     width: 100%;
+}
+
+.wysiwyg-container {
+    overflow: visible !important;
+    page-break-inside: avoid;
+    color: #0f172a;
 }
 
 .inline-textarea {
@@ -964,6 +970,48 @@ input:checked + .slider:before {
     cursor: pointer;
     padding: 0.25rem 0.5rem;
     font-weight: bold;
+}
+
+/* ---- Preview Mode ---- */
+.preview-mode .no-print {
+    display: none !important;
+}
+
+.preview-mode input,
+.preview-mode input[readonly],
+.preview-mode textarea,
+.preview-mode select {
+    border-color: transparent !important;
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    pointer-events: none;
+    resize: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.preview-mode .logo-upload-box {
+    border-color: transparent !important;
+    background-color: transparent !important;
+}
+
+.preview-mode .switch {
+    display: none !important;
+}
+
+/* pdf-exporting: same as preview + hide add-row buttons */
+.pdf-exporting .no-print {
+    display: none !important;
+}
+
+.pdf-exporting input,
+.pdf-exporting textarea,
+.pdf-exporting select {
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 
 /* Print CSS */
