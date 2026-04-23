@@ -1,181 +1,177 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const addItemBtn = document.getElementById('sim-add-item-btn');
-    const itemsBody = document.getElementById('sim-items-body');
-    const printContainer = document.getElementById('printable-simple-invoice');
+    // ---- Elements ----
+    const logoUploadBox = document.getElementById('logo-upload-box');
+    const logoInput = document.getElementById('sim-logo-input');
+    const logoPreview = document.getElementById('sim-logo-preview');
     
-    // Toggles
-    const toggleQr = document.getElementById('tgl-sim-qr');
+    const itemsBody = document.getElementById('sim-wysiwyg-items-body');
+    const addLineBtn = document.getElementById('sim-add-line-btn');
+    
+    const totalDisplay = document.getElementById('sim-total-display');
+    const balanceDisplay = document.getElementById('sim-balance-display');
+    const paidToggle = document.getElementById('sim-paid-toggle');
+    const paidInput = document.getElementById('sim-paid-input');
 
-    // Add Item Row
-    function addRow(data = null) {
-        const tr = document.createElement('tr');
-        tr.className = 'item-row';
-        tr.innerHTML = `
-            <td style="width: 50%;"><input type="text" class="item-desc full-width" placeholder="Description" value="${data ? data.desc : ''}"></td>
-            <td style="width: 15%;"><input type="number" class="item-qty full-width" placeholder="Qty" value="${data ? data.qty : '1'}" min="1"></td>
-            <td style="width: 20%;"><input type="number" class="item-rate full-width" placeholder="Rate" value="${data ? data.rate : '0'}" min="0"></td>
-            <td style="width: 10%; font-weight: 600; text-align: right;" class="item-amount-display">₹0.00</td>
-            <td style="width: 5%;"><button class="btn text-btn remove-btn" style="color: #ef4444; padding:0;">X</button></td>
-        `;
-        itemsBody.appendChild(tr);
+    const addMetaBtn = document.getElementById('sim-add-meta-btn');
+    const metaBody = document.getElementById('sim-meta-body');
 
-        // Bind calculation events
-        const qtyInp = tr.querySelector('.item-qty');
-        const rateInp = tr.querySelector('.item-rate');
-        const amtDisp = tr.querySelector('.item-amount-display');
+    // ---- Logo Upload ----
+    if (logoUploadBox && logoInput) {
+        logoUploadBox.addEventListener('click', () => {
+            logoInput.click();
+        });
 
-        function calcRow() {
-            const qty = parseFloat(qtyInp.value) || 0;
-            const rate = parseFloat(rateInp.value) || 0;
-            amtDisp.innerText = '₹' + (qty * rate).toFixed(2);
-        }
-
-        qtyInp.addEventListener('input', calcRow);
-        rateInp.addEventListener('input', calcRow);
-        calcRow();
-
-        tr.querySelector('.remove-btn').addEventListener('click', () => {
-            tr.remove();
+        logoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    logoPreview.src = e.target.result;
+                    logoPreview.style.display = 'block';
+                    // Hide the placeholder text
+                    logoUploadBox.querySelector('span').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
         });
     }
 
-    if (addItemBtn) addItemBtn.addEventListener('click', () => addRow());
+    // ---- Meta Info Adding ----
+    if (addMetaBtn && metaBody) {
+        addMetaBtn.addEventListener('click', () => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="text-align: right; font-weight: 600; padding: 5px;"><input type="text" class="inline-input" style="text-align: right; font-weight: 600; width: 100%;" placeholder="Custom Field" value="Custom Field"></td>
+                <td style="padding: 5px; border: 1px solid transparent;" class="border-hover">
+                    <div style="display: flex; align-items: center; width: 100%;">
+                        <input type="text" class="inline-input" style="text-align: right; flex: 1;" placeholder="Value">
+                        <button class="btn text-btn remove-meta-btn no-print" style="color: #ef4444; padding:0 0 0 5px; margin-left: auto;">🗑️</button>
+                    </div>
+                </td>
+            `;
+            metaBody.appendChild(tr);
 
-    // Initialize with one row if empty
-    if(itemsBody && itemsBody.children.length === 0) addRow();
+            tr.querySelector('.remove-meta-btn').addEventListener('click', () => {
+                tr.remove();
+            });
+        });
+    }
 
-    // Removed global input binding to prevent live updates
-
-    function updatePreview() {
-        if (!printContainer) return;
-
-        // Collect Data
-        const invNum = document.getElementById('sim-inv-num').value || 'INV-S01';
-        const invDate = document.getElementById('sim-inv-date').value || new Date().toISOString().split('T')[0];
-        const billerDetails = document.getElementById('sim-biller-details').value.replace(/\n/g, '<br>');
-        const buyDetails = document.getElementById('sim-buy-details').value.replace(/\n/g, '<br>');
+    // ---- Items Table Logic ----
+    function calculateTotals() {
+        let total = 0;
+        const rows = document.querySelectorAll('.item-row');
         
-        // Calculate items
-        const rows = document.querySelectorAll('#sim-items-body tr');
-        let itemsHtml = '';
-        let grandTotal = 0;
-
         rows.forEach(row => {
-            const desc = row.querySelector('.item-desc').value || '';
             const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
             const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
             const amt = qty * rate;
             
-            if (desc || amt > 0) {
-                grandTotal += amt;
-                itemsHtml += `
-                    <tr>
-                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${desc}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">${qty}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">₹${rate.toFixed(2)}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">₹${amt.toFixed(2)}</td>
-                    </tr>
-                `;
-            }
+            row.querySelector('.item-amt-display').value = amt;
+            total += amt;
         });
 
-        // Build HTML
-        let html = `
-            <div style="font-family: 'Inter', sans-serif; padding: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #3b82f6; padding-bottom: 20px;">
-                    <div>
-                        <h2 style="margin:0; font-size: 28px; color: #1e293b; font-weight: 700;">INVOICE</h2>
-                        <p style="margin:5px 0 0; color: #64748b;">No: <strong>${invNum}</strong></p>
-                        <p style="margin:0; color: #64748b;">Date: <strong>${invDate}</strong></p>
-                    </div>
-                    ${toggleQr.checked ? '<div style="text-align: right;"><div id="sim-qrcode" style="width: 80px; height: 80px; display: inline-block;"></div></div>' : ''}
-                </div>
-                
-                <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
-                    <div style="width: 48%;">
-                        <h4 style="margin:0 0 10px; color: #94a3b8; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">From</h4>
-                        <p style="margin:0; font-size: 15px; color: #1e293b;">${billerDetails || 'Your Name/Company<br>Address'}</p>
-                    </div>
-                    <div style="width: 48%;">
-                        <h4 style="margin:0 0 10px; color: #94a3b8; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Billed To</h4>
-                        <p style="margin:0; font-size: 15px; color: #1e293b;">${buyDetails || 'Client Name<br>Address'}</p>
-                    </div>
-                </div>
-
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-                    <thead>
-                        <tr style="background-color: #f8fafc;">
-                            <th style="text-align:left; padding:12px 10px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Description</th>
-                            <th style="text-align:center; padding:12px 10px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Qty</th>
-                            <th style="text-align:right; padding:12px 10px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Rate</th>
-                            <th style="text-align:right; padding:12px 10px; color: #64748b; font-weight: 600; border-bottom: 2px solid #e2e8f0;">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${itemsHtml || '<tr><td colspan="4" style="text-align:center; padding: 20px;">No items</td></tr>'}
-                    </tbody>
-                </table>
-                
-                <div style="display: flex; justify-content: flex-end;">
-                    <table style="width: 250px; border-collapse: collapse;">
-                        <tr style="font-size: 1.2em; font-weight: 700; color: #0f172a;">
-                            <td style="padding: 10px 5px;">Total:</td>
-                            <td style="text-align:right; padding: 10px 5px; color: #3b82f6;">₹${grandTotal.toFixed(2)}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        `;
-
-        printContainer.innerHTML = html;
-
-        // Generate QR Code
-        if(toggleQr.checked && window.barcodeUtils && invNum) {
-            window.barcodeUtils.generateQR('sim-qrcode', `Invoice: ${invNum}\nTotal: ₹${grandTotal.toFixed(2)}\nDate: ${invDate}`);
+        totalDisplay.innerText = total;
+        
+        let paid = 0;
+        if (paidToggle && paidToggle.checked) {
+            paid = parseFloat(paidInput.value) || 0;
         }
+        
+        balanceDisplay.innerText = total - paid;
     }
 
-    // Manual Preview Trigger
-    const previewBtn = document.getElementById('sim-preview-btn');
-    if (previewBtn) {
-        previewBtn.addEventListener('click', () => {
-            updatePreview();
-            
-            // On mobile, scroll down to the preview section smoothly
-            if (window.innerWidth <= 768) {
-                document.getElementById('printable-simple-invoice').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+    function addRow() {
+        const tr = document.createElement('tr');
+        tr.className = 'item-row';
+        tr.style.borderBottom = '1px solid #e2e8f0';
+        tr.innerHTML = `
+            <td style="padding: 10px;"><input type="text" class="inline-input" style="width:100%; text-align: left;" placeholder="Description"></td>
+            <td style="padding: 10px;"><input type="number" class="inline-input item-qty" style="width:100%; text-align: center;" value="1" min="1"></td>
+            <td style="padding: 10px;"><input type="number" class="inline-input item-rate" style="width:100%; text-align: center;" value="0" min="0"></td>
+            <td style="padding: 10px;"><input type="text" class="inline-input item-amt-display" style="width:100%; text-align: center; font-weight: 600;" value="0" disabled></td>
+            <td style="padding: 10px; text-align: center;" class="no-print"><button class="btn text-btn remove-row-btn" style="color: #ef4444; padding:0;">🗑️</button></td>
+        `;
+        itemsBody.appendChild(tr);
+
+        // Bind events
+        const qtyInp = tr.querySelector('.item-qty');
+        const rateInp = tr.querySelector('.item-rate');
+        
+        qtyInp.addEventListener('input', calculateTotals);
+        rateInp.addEventListener('input', calculateTotals);
+
+        tr.querySelector('.remove-row-btn').addEventListener('click', () => {
+            tr.remove();
+            calculateTotals();
         });
+
+        calculateTotals();
     }
 
-    // Call once to render initial empty state
-    setTimeout(updatePreview, 100);
+    if (addLineBtn) {
+        addLineBtn.addEventListener('click', addRow);
+    }
 
-    // Generate PDF via html2pdf
+    // Initialize with two rows like the mock
+    if (itemsBody) {
+        addRow();
+        addRow();
+    }
+
+    // ---- Summary Logic ----
+    if (paidToggle && paidInput) {
+        paidToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                paidInput.style.display = 'block';
+                paidInput.disabled = false;
+            } else {
+                paidInput.style.display = 'none';
+                paidInput.disabled = true;
+                paidInput.value = '0';
+            }
+            calculateTotals();
+        });
+
+        paidInput.addEventListener('input', calculateTotals);
+    }
+
+    // ---- Date Default ----
+    const dateInput = document.getElementById('sim-current-date-input');
+    if (dateInput) {
+        dateInput.value = new Date().toLocaleDateString();
+    }
+
+    // ---- PDF Generation ----
     const generateBtn = document.getElementById('sim-generate-pdf');
     if (generateBtn) {
         generateBtn.addEventListener('click', () => {
-            const invNum = document.getElementById('sim-inv-num').value || 'SimpleInvoice';
             const element = document.getElementById('printable-simple-invoice');
-
+            
             generateBtn.innerText = "Generating PDF...";
             generateBtn.disabled = true;
 
+            // Add exporting class to hide UI elements
+            element.classList.add('pdf-exporting');
+
             const opt = {
-                margin:       10,
-                filename:     `${invNum}_Invoice.pdf`,
+                margin:       [10, 10, 10, 10], // top, left, bottom, right
+                filename:     `Invoice.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
-                generateBtn.innerText = "Export Simple Invoice PDF";
+                // Remove exporting class
+                element.classList.remove('pdf-exporting');
+                generateBtn.innerText = "Export Invoice as PDF";
                 generateBtn.disabled = false;
             }).catch(err => {
                 console.error("PDF Generation failed", err);
                 alert("Failed to generate PDF. Please try again.");
-                generateBtn.innerText = "Export Simple Invoice PDF";
+                element.classList.remove('pdf-exporting');
+                generateBtn.innerText = "Export Invoice as PDF";
                 generateBtn.disabled = false;
             });
         });

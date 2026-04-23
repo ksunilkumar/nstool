@@ -39,20 +39,61 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ---- Tab Navigation Logic ----
+    // ---- Tab Navigation Logic & Routing ----
     const navButtons = document.querySelectorAll('.nav-btn');
     const tabContents = document.querySelectorAll('.tab-content');
+    const subNavBtns = document.querySelectorAll('.sub-nav-btn');
+    const subPanels = document.querySelectorAll('.sub-panel');
+
+    function activateMainTab(tabId) {
+        navButtons.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(t => t.classList.remove('active'));
+
+        const targetBtn = document.querySelector(`.nav-btn[data-target="${tabId}"]`);
+        if (targetBtn) targetBtn.classList.add('active');
+        
+        const targetTab = document.getElementById(tabId);
+        if (targetTab) targetTab.classList.add('active');
+    }
+
+    function activateSubTab(panelId) {
+        const targetBtn = document.querySelector(`.sub-nav-btn[data-target="${panelId}"]`);
+        if (targetBtn) {
+            const allSubBtns = targetBtn.closest('.sub-nav').querySelectorAll('.sub-nav-btn');
+            allSubBtns.forEach(b => b.classList.remove('active'));
+            targetBtn.classList.add('active');
+        }
+
+        const targetPanel = document.getElementById(panelId);
+        if (targetPanel) {
+            const allSubPanels = targetPanel.parentElement.querySelectorAll('.sub-panel');
+            allSubPanels.forEach(p => p.classList.remove('active'));
+            targetPanel.classList.add('active');
+        }
+    }
+
+    function handleRouting() {
+        let hash = window.location.hash.substring(1);
+        if (!hash) hash = 'home'; // default
+
+        const targetElement = document.getElementById(hash);
+        if (targetElement) {
+            if (targetElement.classList.contains('tab-content')) {
+                activateMainTab(hash);
+            } else if (targetElement.classList.contains('sub-panel')) {
+                const parentTab = targetElement.closest('.tab-content');
+                if (parentTab) {
+                    activateMainTab(parentTab.id);
+                    activateSubTab(hash);
+                }
+            }
+        }
+    }
 
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remove active class from all buttons and tabs
-            navButtons.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(t => t.classList.remove('active'));
-
-            // Add active class to clicked button and target tab
-            btn.classList.add('active');
             const targetId = btn.getAttribute('data-target');
-            document.getElementById(targetId).classList.add('active');
+            window.location.hash = targetId;
 
             // Close mobile menu if open
             if (appNav && appNav.classList.contains('open')) {
@@ -60,6 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    subNavBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-target');
+            window.location.hash = targetId;
+        });
+    });
+
+    window.addEventListener('hashchange', handleRouting);
+    
+    // Initial routing on load
+    handleRouting();
 
 
     // ---- Conversion Tab Logic ----
@@ -384,18 +437,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // ---- Invoice Tab Sub-Navigation Logic ----
-    const subNavBtns = document.querySelectorAll('.sub-nav-btn');
-    const subPanels = document.querySelectorAll('.sub-panel');
-
-    subNavBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            subNavBtns.forEach(b => b.classList.remove('active'));
-            subPanels.forEach(p => p.classList.remove('active'));
-            
-            btn.classList.add('active');
-            const targetId = btn.getAttribute('data-target');
-            document.getElementById(targetId).classList.add('active');
-        });
-    });
+    // ---- Sub-Navigation Logic Handled By Router ----
+    // (Removed duplicate subNavBtns click listeners as they are now managed by the hash router above)
 });
