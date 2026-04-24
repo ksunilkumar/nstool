@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    // ---- PDF.js library resolver ----
+    // pdf.js v3.x CDN exposes itself as window.pdfjsLib automatically.
+    // This helper resolves it at call-time (after page load) so timing is never an issue.
+    function getPdfLib() {
+        return window.pdfjsLib
+            || window['pdfjs-dist/build/pdf']
+            || (typeof pdfjsLib !== 'undefined' ? pdfjsLib : null);
+    }
+    function ensurePdfWorker(lib) {
+        if (lib && !lib.GlobalWorkerOptions.workerSrc) {
+            lib.GlobalWorkerOptions.workerSrc =
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+        return lib;
+    }
     // ---- Theme Toggle Logic ----
     const themeToggleBtn = document.getElementById('theme-toggle');
     const moonIcon = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
@@ -227,10 +243,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 
             } else if (toolType === 'pdf-img' && currentConversionFile.type === 'application/pdf') {
                 // Real PDF to Image using PDF.js
+                const _pdfLib = ensurePdfWorker(getPdfLib());
+                if (!_pdfLib) { alert('PDF library not loaded. Please refresh.'); return; }
                 const arrayBuffer = await currentConversionFile.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const pdf = await _pdfLib.getDocument({ data: arrayBuffer }).promise;
                 const page = await pdf.getPage(1);
-                const viewport = page.getViewport({ scale: 3.0 }); // Increased for better quality
+                const viewport = page.getViewport({ scale: 3.0 }); // High quality
                 
                 const canvas = document.createElement('canvas');
                 const context = canvas.getContext('2d');
@@ -242,73 +260,161 @@ document.addEventListener('DOMContentLoaded', () => {
                 downloadUrl = URL.createObjectURL(pngBlob);
                 
             } else if (toolType === 'doc-pdf') {
-                try {
-                    const arrayBuffer = await currentConversionFile.arrayBuffer();
-                    let htmlContent = "";
-                    if (window.mammoth) {
-                        const result = await window.mammoth.convertToHtml({arrayBuffer: arrayBuffer});
-                        htmlContent = result.value;
-                    }
-                    if (!htmlContent) {
-                        htmlContent = "<h1>Document Content Not Parsable</h1><p>Please upload a valid .docx file.</p>";
-                    }
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    doc.setFont("Helvetica");
-                    doc.setFontSize(12);
-                    
-                    // Simple text extraction from HTML to put into PDF
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = htmlContent;
-                    const textContent = tempDiv.innerText || tempDiv.textContent;
-                    
-                    const splitText = doc.splitTextToSize(textContent, 180);
-                    let y = 10;
-                    for (let i = 0; i < splitText.length; i++) {
-                        if (y > 280) {
-                            doc.addPage();
-                            y = 10;
-                        }
-                        doc.text(splitText[i], 10, y);
-                        y += 7;
-                    }
-                    
-                    const pdfBlob = doc.output('blob');
-                    downloadUrl = URL.createObjectURL(pdfBlob);
-                } catch(e) {
-                    console.error(e);
-                    alert("Error parsing DOCX file. Only .docx format is supported.");
+                const fileExt = currentConversionFile.name.split('.').pop().toLowerCase();
+                if (fileExt === 'doc') {
+                    alert('Legacy .doc format is not supported in the browser.\nPlease open your file in Word and Save As → .docx format, then try again.');
+                    document.getElementById('convert-result').classList.add('hidden');
+                    document.getElementById('convert-status').classList.add('hidden');
+                    currentConversionFile = null;
                     return;
+                }
+                if (!window.mammoth) {
+                    alert('Document converter library not loaded. Please refresh the page and try again.');
+                    return;
+                }
+
+                // Step 1: Parse DOCX → HTML with mammoth
+                const docArrayBuffer = await currentConversionFile.arrayBuffer();
+                let mammothResult;
+                try {
+                    mammothResult = await window.mammoth.convertToHtml({ arrayBuffer: docArrayBuffer });
+                } catch(mammothErr) {
+                    console.error('Mammoth error:', mammothErr);
+                    alert('Could not parse the document. Please ensure it is a valid .docx file.');
+                    return;
+                }
+                const docHtml = mammothResult.value || '<p>No content could be extracted from this document.</p>';
+
+                // Step 2: Build a styled, renderable container off-screen
+                const renderContainer = document.createElement('div');
+                renderContainer.style.cssText = [
+                    'position: fixed',
+                    'left: -9999px',
+                    'top: 0',
+                    'width: 794px',           // A4 width in pixels at 96dpi
+                    'background: #ffffff',
+                    'color: #000000',
+                    'font-family: Arial, sans-serif',
+                    'font-size: 13px',
+                    'line-height: 1.7',
+                    'padding: 50px 60px',
+                    'box-sizing: border-box',
+                    'z-index: -1000'
+                ].join(';');
+                renderContainer.innerHTML = docHtml;
+                document.body.appendChild(renderContainer);
+
+                // Step 3: Render to PDF using html2pdf
+                try {
+                    const pdfOptions = {
+                        margin: 10,
+                        filename: newName,
+                        image: { type: 'jpeg', quality: 0.95 },
+                        html2canvas: {
+                            scale: 2,
+                            useCORS: true,
+                            allowTaint: true,
+                            logging: false,
+                            backgroundColor: '#ffffff'
+                        },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
+                    const pdfBlob = await html2pdf().set(pdfOptions).from(renderContainer).outputPdf('blob');
+                    downloadUrl = URL.createObjectURL(pdfBlob);
+                } catch(pdfErr) {
+                    console.error('PDF render error:', pdfErr);
+                    // Fallback: plain text via jsPDF
+                    const { jsPDF } = window.jspdf;
+                    const fallbackDoc = new jsPDF();
+                    fallbackDoc.setFont('Helvetica');
+                    fallbackDoc.setFontSize(12);
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = docHtml;
+                    const rawText = (tempDiv.innerText || tempDiv.textContent || '').trim();
+                    const lines = fallbackDoc.splitTextToSize(rawText, 180);
+                    let yPos = 15;
+                    for (const line of lines) {
+                        if (yPos > 280) { fallbackDoc.addPage(); yPos = 15; }
+                        fallbackDoc.text(line, 15, yPos);
+                        yPos += 7;
+                    }
+                    downloadUrl = URL.createObjectURL(fallbackDoc.output('blob'));
+                } finally {
+                    document.body.removeChild(renderContainer);
                 }
             } else if (toolType === 'pdf-doc' && currentConversionFile.type === 'application/pdf') {
-                try {
-                    const arrayBuffer = await currentConversionFile.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                    let fullText = "<html><head><meta charset='utf-8'></head><body style='font-family: Arial, sans-serif;'>";
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const textContent = await page.getTextContent();
-                        let lastY = -1;
-                        let pageHtml = "<div style='page-break-after: always;'>";
-                        for (let item of textContent.items) {
-                            if (lastY !== -1 && Math.abs(item.transform[5] - lastY) > 5) {
-                                pageHtml += "<br>";
-                            }
-                            pageHtml += `<span>${item.str}</span> `;
-                            lastY = item.transform[5];
-                        }
-                        pageHtml += "</div>";
-                        fullText += pageHtml;
-                    }
-                    fullText += "</body></html>";
-                    
-                    const blob = new Blob([fullText], { type: 'application/msword' });
-                    downloadUrl = URL.createObjectURL(blob);
-                } catch(e) {
-                    console.error(e);
-                    alert("Error parsing PDF file.");
+                // Resolve pdfjsLib safely at call-time
+                const pdfLib = ensurePdfWorker(getPdfLib());
+                if (!pdfLib) {
+                    alert('PDF reader library not loaded. Please refresh the page and try again.');
                     return;
                 }
+
+                const pdfArrayBuffer = await currentConversionFile.arrayBuffer();
+                const pdfDoc = await pdfLib.getDocument({ data: pdfArrayBuffer }).promise;
+                let allPagesHtml = '';
+
+                for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+                    const pdfPage = await pdfDoc.getPage(pageNum);
+                    const pdfViewport = pdfPage.getViewport({ scale: 1 });
+                    const pageH = pdfViewport.height;
+                    const textData = await pdfPage.getTextContent();
+
+                    // Sort: PDF Y-axis is bottom-up, so invert. Group into lines by Y proximity.
+                    const items = textData.items.filter(item => item.str && item.str.trim() !== '');
+                    items.sort((a, b) => {
+                        const ay = pageH - a.transform[5];
+                        const by = pageH - b.transform[5];
+                        if (Math.abs(ay - by) > 4) return ay - by;   // different rows
+                        return a.transform[4] - b.transform[4];       // same row: left→right
+                    });
+
+                    // Group items into logical lines
+                    const lines = [];
+                    let currentLine = [];
+                    let lastLineY = -1;
+                    for (const item of items) {
+                        const itemY = pageH - item.transform[5];
+                        if (lastLineY === -1 || Math.abs(itemY - lastLineY) <= 4) {
+                            currentLine.push(item.str);
+                        } else {
+                            if (currentLine.length) lines.push(currentLine.join(' '));
+                            currentLine = [item.str];
+                        }
+                        lastLineY = itemY;
+                    }
+                    if (currentLine.length) lines.push(currentLine.join(' '));
+
+                    // Build HTML for this page — each line is a <p>
+                    const pageHtml = lines
+                        .map(line => `<p>${line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`)
+                        .join('\n');
+
+                    allPagesHtml += `<div style="page-break-after:always;margin-bottom:30px;">${pageHtml}</div>\n`;
+                }
+
+                // Build a Word-compatible HTML document
+                const wordDoc = [
+                    '<!DOCTYPE html>',
+                    '<html xmlns:o="urn:schemas-microsoft-com:office:office"',
+                    '      xmlns:w="urn:schemas-microsoft-com:office:word"',
+                    '      xmlns="http://www.w3.org/TR/REC-html40">',
+                    '<head>',
+                    '<meta charset="utf-8">',
+                    '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+                    '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>90</w:Zoom></w:WordDocument></xml><![endif]-->',
+                    '<style>',
+                    '  body { font-family: Arial, sans-serif; font-size: 12pt; margin: 1in; line-height: 1.5; color: #000; }',
+                    '  p { margin: 0 0 6pt 0; }',
+                    '  div { margin-bottom: 20pt; }',
+                    '</style>',
+                    '</head>',
+                    `<body>${allPagesHtml}</body>`,
+                    '</html>'
+                ].join('\n');
+
+                const docBlob = new Blob([wordDoc], { type: 'application/msword' });
+                downloadUrl = URL.createObjectURL(docBlob);
             } else {
                 downloadUrl = URL.createObjectURL(currentConversionFile);
             }
@@ -476,7 +582,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const compressPdfAsync = async () => {
                 try {
                     const arrayBuffer = await currentPdfFile.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    const _lib = ensurePdfWorker(getPdfLib());
+                    if (!_lib) throw new Error('PDF.js library not available');
+                    const pdf = await _lib.getDocument({ data: arrayBuffer }).promise;
                     const { jsPDF } = window.jspdf;
                     const newPdf = new jsPDF();
                     
