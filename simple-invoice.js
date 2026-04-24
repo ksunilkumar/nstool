@@ -138,51 +138,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function exportPDF() {
-        const element  = document.getElementById('printable-simple-invoice');
-        const btn      = document.getElementById('sim-generate-pdf');
-        btn.textContent = 'Generating…';
-        btn.disabled    = true;
+        const btn = document.getElementById('sim-generate-pdf');
+        if (btn) {
+            btn.textContent = 'Generating…';
+            btn.disabled = true;
+        }
 
-        // 1. Apply clean display classes
-        element.classList.add('pdf-exporting', 'preview-mode');
-
-        // 2. Pin element to exact A4 pixel width so html2canvas captures correctly
-        const savedWidth    = element.style.width;
-        const savedMaxWidth = element.style.maxWidth;
-        const savedPadding  = element.style.padding;
-        element.style.width    = '793px';   // A4 exact width at 96dpi
-        element.style.maxWidth = '793px';
-        element.style.padding  = '20px 30px';
-
-        const opt = {
-            margin:       0,
-            filename:     'Simple_Invoice.pdf',
-            image:        { type: 'jpeg', quality: 1 },
-            html2canvas:  {
-                scale:          2,
-                useCORS:        true,
-                logging:        false,
-                scrollX:        0,
-                scrollY:        0
-            },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-        };
-
-        html2pdf().set(opt).from(element).save()
-            .then(() => restoreAfterPDF(element, btn, savedWidth, savedMaxWidth, savedPadding, 'Export Invoice as PDF'))
-            .catch((err) => {
-                console.error('PDF error:', err);
-                restoreAfterPDF(element, btn, savedWidth, savedMaxWidth, savedPadding, 'Export Invoice as PDF');
+        if (window.utils && window.utils.exportCloneToPDF) {
+            window.utils.exportCloneToPDF('printable-simple-invoice', 'Simple_Invoice.pdf', () => {
+                if (btn) {
+                    btn.textContent = 'Export Invoice as PDF';
+                    btn.disabled = false;
+                }
             });
-    }
-
-    function restoreAfterPDF(el, btn, w, mw, p, label) {
-        el.style.width    = w;
-        el.style.maxWidth = mw;
-        el.style.padding  = p;
-        el.classList.remove('pdf-exporting', 'preview-mode');
-        btn.textContent = label;
-        btn.disabled    = false;
+        }
     }
 });

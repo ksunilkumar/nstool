@@ -126,51 +126,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function exportPDF() {
-        const element = document.getElementById('printable-eway-bill');
         const ewbNum  = document.getElementById('ewb-num')?.value || 'EWayBill';
         const btn     = document.getElementById('ewb-generate-pdf');
 
-        btn.textContent = 'Generating…';
-        btn.disabled    = true;
+        if (btn) {
+            btn.textContent = 'Generating…';
+            btn.disabled    = true;
+        }
 
-        element.classList.add('pdf-exporting', 'preview-mode');
-
-        const savedWidth    = element.style.width;
-        const savedMaxWidth = element.style.maxWidth;
-        const savedPadding  = element.style.padding;
-        element.style.width    = '793px';
-        element.style.maxWidth = '793px';
-        element.style.padding  = '20px 30px';
-
-        const opt = {
-            margin:      0,
-            filename:    `${ewbNum}_EWay_Bill.pdf`,
-            image:       { type: 'jpeg', quality: 1 },
-            html2canvas: {
-                scale:       2,
-                useCORS:     true,
-                logging:     false,
-                scrollX:     0,
-                scrollY:     0
-            },
-            jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
-        };
-
-        html2pdf().set(opt).from(element).save()
-            .then(() => restore(element, btn, savedWidth, savedMaxWidth, savedPadding, 'Export E-Way Bill PDF'))
-            .catch((err) => {
-                console.error('PDF error:', err);
-                restore(element, btn, savedWidth, savedMaxWidth, savedPadding, 'Export E-Way Bill PDF');
+        if (window.utils && window.utils.exportCloneToPDF) {
+            window.utils.exportCloneToPDF('printable-eway-bill', `${ewbNum}.pdf`, () => {
+                if (btn) {
+                    btn.textContent = 'Export E-Way Bill as PDF';
+                    btn.disabled = false;
+                }
             });
-    }
-
-    function restore(el, btn, w, mw, p, label) {
-        el.style.width    = w;
-        el.style.maxWidth = mw;
-        el.style.padding  = p;
-        el.classList.remove('pdf-exporting', 'preview-mode');
-        btn.textContent = label;
-        btn.disabled    = false;
+        }
     }
 });

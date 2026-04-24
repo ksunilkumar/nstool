@@ -119,51 +119,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function exportPDF() {
-        const element = document.getElementById('printable-gst-invoice');
         const invNum  = document.getElementById('gst-inv-num')?.value || 'GST_Invoice';
         const btn     = document.getElementById('gst-generate-pdf');
 
-        btn.textContent = 'Generating…';
-        btn.disabled    = true;
+        if (btn) {
+            btn.textContent = 'Generating…';
+            btn.disabled    = true;
+        }
 
-        element.classList.add('pdf-exporting', 'preview-mode');
-
-        const savedWidth    = element.style.width;
-        const savedMaxWidth = element.style.maxWidth;
-        const savedPadding  = element.style.padding;
-        element.style.width    = '793px';
-        element.style.maxWidth = '793px';
-        element.style.padding  = '20px 30px';
-
-        const opt = {
-            margin:      0,
-            filename:    `${invNum}_GST_Invoice.pdf`,
-            image:       { type: 'jpeg', quality: 1 },
-            html2canvas: {
-                scale:       2,
-                useCORS:     true,
-                logging:     false,
-                scrollX:     0,
-                scrollY:     0
-            },
-            jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
-        };
-
-        html2pdf().set(opt).from(element).save()
-            .then(() => restore(element, btn, savedWidth, savedMaxWidth, savedPadding, 'Export Invoice as PDF'))
-            .catch((err) => {
-                console.error('PDF error:', err);
-                restore(element, btn, savedWidth, savedMaxWidth, savedPadding, 'Export Invoice as PDF');
+        if (window.utils && window.utils.exportCloneToPDF) {
+            window.utils.exportCloneToPDF('printable-gst-invoice', `${invNum}_GST_Invoice.pdf`, () => {
+                if (btn) {
+                    btn.textContent = 'Export Invoice as PDF';
+                    btn.disabled = false;
+                }
             });
-    }
-
-    function restore(el, btn, w, mw, p, label) {
-        el.style.width    = w;
-        el.style.maxWidth = mw;
-        el.style.padding  = p;
-        el.classList.remove('pdf-exporting', 'preview-mode');
-        btn.textContent = label;
-        btn.disabled    = false;
+        }
     }
 });

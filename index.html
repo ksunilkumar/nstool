@@ -383,17 +383,17 @@
 
                                     <!-- Business Details -->
                                     <div style="flex: 1;">
-                                        <input type="text" class="inline-input bold-input"
-                                            style="font-size: 1.5rem; font-weight: 600; margin-bottom: 5px; width: 100%;"
-                                            value="[Business Name]">
+                                        <textarea class="inline-textarea bold-input auto-resize"
+                                            style="font-size: 1.5rem; font-weight: 600; margin-bottom: 5px; width: 100%; overflow: hidden;"
+                                            rows="1">[Business Name]</textarea>
                                         <textarea class="inline-textarea" rows="5"
                                             style="width: 100%;">[Registration Number]&#10;[Business Address]&#10;[City, Region]&#10;Representative: [Name]&#10;Department: [Unit]</textarea>
                                     </div>
                                 </div>
                                 <div style="width: 35%; text-align: right;">
-                                    <input type="text" class="inline-input title-input"
-                                        style="font-size: 2.5rem; font-weight: 700; text-align: right; width: 100%;"
-                                        value="Blank Invoice">
+                                    <textarea class="inline-textarea title-input auto-resize"
+                                        style="font-size: 2.5rem; font-weight: 700; text-align: right; width: 100%; overflow: hidden;"
+                                        rows="1">Invoice</textarea>
                                 </div>
                             </div>
 
@@ -528,9 +528,9 @@
                                 style="display: flex; justify-content: space-between; margin-bottom: 40px;">
                                 <div style="display: flex; gap: 20px; width: 60%;">
                                     <div style="flex: 1;">
-                                        <input type="text" class="inline-input bold-input"
-                                            style="font-size: 1.5rem; font-weight: 600; margin-bottom: 5px; width: 100%;"
-                                            id="gst-sup-name" value="[Supplier Name]">
+                                        <textarea class="inline-textarea bold-input auto-resize"
+                                            style="font-size: 1.5rem; font-weight: 600; margin-bottom: 5px; width: 100%; overflow: hidden;"
+                                            id="gst-sup-name" rows="1">[Supplier Name]</textarea>
                                         <textarea class="inline-textarea" id="gst-sup-address" rows="3"
                                             style="width: 100%;">[Supplier Address]</textarea>
                                         <input type="text" class="inline-input" id="gst-sup-gstin" style="width: 100%;"
@@ -538,9 +538,9 @@
                                     </div>
                                 </div>
                                 <div style="width: 35%; text-align: right;">
-                                    <input type="text" class="inline-input title-input"
-                                        style="font-size: 2.5rem; font-weight: 700; text-align: right; width: 100%;"
-                                        value="TAX INVOICE">
+                                    <textarea class="inline-textarea title-input auto-resize"
+                                        style="font-size: 2.5rem; font-weight: 700; text-align: right; width: 100%; overflow: hidden;"
+                                        rows="1">Invoice</textarea>
                                     <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
                                         <svg id="gst-barcode" class="no-print"
                                             style="max-width: 150px; height: 50px;"></svg>
@@ -556,8 +556,8 @@
                                     <input type="text" class="inline-input bold-input"
                                         style="width: 100px; font-weight: 600;" value="Billed To">
                                     <div style="flex: 1;">
-                                        <input type="text" class="inline-input bold-input" id="gst-buy-name"
-                                            style="width: 100%; font-weight: 600;" value="[Buyer Name]">
+                                        <textarea class="inline-textarea bold-input auto-resize" id="gst-buy-name"
+                                            style="width: 100%; font-weight: 600; overflow: hidden;" rows="1">[Buyer Name]</textarea>
                                         <textarea class="inline-textarea" id="gst-buy-address" rows="3"
                                             style="width: 100%;">[Buyer Address]</textarea>
                                         <input type="text" class="inline-input" id="gst-buy-gstin" style="width: 100%;"

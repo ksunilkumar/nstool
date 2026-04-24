@@ -615,7 +615,7 @@ textarea {
 /* All editable inputs/textareas inside the invoice */
 .inline-input,
 .inline-textarea {
-    border: 1px solid #d1fae5;
+    border: 1px solid transparent;
     background: transparent;
     font-family: inherit;
     font-size: inherit;
