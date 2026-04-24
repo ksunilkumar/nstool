@@ -220,8 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderWidth = pageHeight * imgRatio;
                 }
                 
-                // We use 'JPEG' as generic input format for jspdf's addImage since it usually handles base64
-                doc.addImage(imgData, 'JPEG', 0, 0, renderWidth, renderHeight);
+                const imageFormat = currentConversionFile.type === 'image/png' ? 'PNG' : 'JPEG';
+                doc.addImage(imgData, imageFormat, 0, 0, renderWidth, renderHeight, undefined, 'FAST');
                 const pdfBlob = doc.output('blob');
                 downloadUrl = URL.createObjectURL(pdfBlob);
                 
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const arrayBuffer = await currentConversionFile.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
                 const page = await pdf.getPage(1);
-                const viewport = page.getViewport({ scale: 1.5 });
+                const viewport = page.getViewport({ scale: 3.0 }); // Increased for better quality
                 
                 const canvas = document.createElement('canvas');
                 const context = canvas.getContext('2d');
@@ -241,27 +241,76 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pngBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 downloadUrl = URL.createObjectURL(pngBlob);
                 
-            } else {
-                // Mock for DOC-PDF, PDF-DOC or unsupported inputs
-                // Create a generic valid text/html file masquerading as doc, or empty pdf
-                if (ext === 'pdf') {
-                    const { jsPDF } = window.jspdf;
-                    if(jsPDF) {
-                        const doc = new jsPDF();
-                        doc.text("Mock conversion successful.", 10, 10);
-                        const pdfBlob = doc.output('blob');
-                        downloadUrl = URL.createObjectURL(pdfBlob);
-                    } else {
-                        downloadUrl = URL.createObjectURL(currentConversionFile);
+            } else if (toolType === 'doc-pdf') {
+                try {
+                    const arrayBuffer = await currentConversionFile.arrayBuffer();
+                    let htmlContent = "";
+                    if (window.mammoth) {
+                        const result = await window.mammoth.convertToHtml({arrayBuffer: arrayBuffer});
+                        htmlContent = result.value;
                     }
-                } else if (ext === 'doc') {
-                    const content = "<html><body><h1>Converted Document</h1><p>Mock conversion successful.</p></body></html>";
-                    const blob = new Blob([content], { type: 'application/msword' });
-                    downloadUrl = URL.createObjectURL(blob);
-                } else {
-                    // fallback to just original file if all else fails
-                    downloadUrl = URL.createObjectURL(currentConversionFile);
+                    if (!htmlContent) {
+                        htmlContent = "<h1>Document Content Not Parsable</h1><p>Please upload a valid .docx file.</p>";
+                    }
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    doc.setFont("Helvetica");
+                    doc.setFontSize(12);
+                    
+                    // Simple text extraction from HTML to put into PDF
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = htmlContent;
+                    const textContent = tempDiv.innerText || tempDiv.textContent;
+                    
+                    const splitText = doc.splitTextToSize(textContent, 180);
+                    let y = 10;
+                    for (let i = 0; i < splitText.length; i++) {
+                        if (y > 280) {
+                            doc.addPage();
+                            y = 10;
+                        }
+                        doc.text(splitText[i], 10, y);
+                        y += 7;
+                    }
+                    
+                    const pdfBlob = doc.output('blob');
+                    downloadUrl = URL.createObjectURL(pdfBlob);
+                } catch(e) {
+                    console.error(e);
+                    alert("Error parsing DOCX file. Only .docx format is supported.");
+                    return;
                 }
+            } else if (toolType === 'pdf-doc' && currentConversionFile.type === 'application/pdf') {
+                try {
+                    const arrayBuffer = await currentConversionFile.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    let fullText = "<html><head><meta charset='utf-8'></head><body style='font-family: Arial, sans-serif;'>";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        let lastY = -1;
+                        let pageHtml = "<div style='page-break-after: always;'>";
+                        for (let item of textContent.items) {
+                            if (lastY !== -1 && Math.abs(item.transform[5] - lastY) > 5) {
+                                pageHtml += "<br>";
+                            }
+                            pageHtml += `<span>${item.str}</span> `;
+                            lastY = item.transform[5];
+                        }
+                        pageHtml += "</div>";
+                        fullText += pageHtml;
+                    }
+                    fullText += "</body></html>";
+                    
+                    const blob = new Blob([fullText], { type: 'application/msword' });
+                    downloadUrl = URL.createObjectURL(blob);
+                } catch(e) {
+                    console.error(e);
+                    alert("Error parsing PDF file.");
+                    return;
+                }
+            } else {
+                downloadUrl = URL.createObjectURL(currentConversionFile);
             }
             
             const a = document.createElement('a');
@@ -418,21 +467,57 @@ document.addEventListener('DOMContentLoaded', () => {
             const base = nameParts.join('.');
             let newName = `${base}_compressed.pdf`;
 
-            // Since pure client-side PDF compression is not possible without advanced libs/servers
-            // we will return the original file to prevent a broken/empty file download.
-            const downloadUrl = URL.createObjectURL(currentPdfFile);
-            
-            const a = document.createElement('a');
-            a.href = downloadUrl;
-            a.download = newName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(downloadUrl);
+            const level = document.getElementById('pdf-compress-level').value; // 'recommended', 'extreme', 'less'
+            let scale = 1.5;
+            let quality = 0.6;
+            if (level === 'extreme') { scale = 1.0; quality = 0.3; }
+            if (level === 'less') { scale = 2.0; quality = 0.8; }
 
-            document.getElementById('pdf-compress-result').classList.add('hidden');
-            document.getElementById('pdf-compress-status').classList.add('hidden');
-            currentPdfFile = null;
+            const compressPdfAsync = async () => {
+                try {
+                    const arrayBuffer = await currentPdfFile.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    const { jsPDF } = window.jspdf;
+                    const newPdf = new jsPDF();
+                    
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const viewport = page.getViewport({ scale: scale });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        
+                        await page.render({ canvasContext: context, viewport: viewport }).promise;
+                        const imgData = canvas.toDataURL('image/jpeg', quality);
+                        
+                        if (i > 1) newPdf.addPage();
+                        
+                        const pdfWidth = newPdf.internal.pageSize.getWidth();
+                        const pdfHeight = newPdf.internal.pageSize.getHeight();
+                        newPdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+                    }
+                    
+                    const compressedBlob = newPdf.output('blob');
+                    const downloadUrl = URL.createObjectURL(compressedBlob);
+                    
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = newName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(downloadUrl);
+                    
+                    document.getElementById('pdf-compress-result').classList.add('hidden');
+                    document.getElementById('pdf-compress-status').classList.add('hidden');
+                    currentPdfFile = null;
+                } catch (error) {
+                    console.error("PDF Compression failed:", error);
+                    alert("An error occurred during PDF compression.");
+                }
+            };
+            compressPdfAsync();
         });
     }
 

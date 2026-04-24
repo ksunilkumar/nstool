@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tr.style.borderBottom = '1px solid #e2e8f0';
         tr.innerHTML = `
             <td style="padding:6px 8px;">
-                <input type="text" class="inline-input" style="width:100%;box-sizing:border-box;" placeholder="Item description">
+                <textarea class="inline-textarea auto-resize" style="width:100%;box-sizing:border-box;overflow:hidden;" rows="1" placeholder="Item description"></textarea>
             </td>
             <td style="padding:6px 4px;">
                 <input type="text" class="inline-input" style="width:100%;box-sizing:border-box;text-align:center;" placeholder="HSN">

@@ -67,13 +67,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if(wrapper) {
                 // simple hack: just download the canvas for now, as downloading the HTML wrapper requires html2canvas which isn't loaded.
                 // we'll just download the QR canvas.
-                const dataUrl = qrCanvas.toDataURL("image/png");
-                const a = document.createElement('a');
-                a.href = dataUrl;
-                a.download = "custom_qr_code.png";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                const actualCanvas = qrCanvas.querySelector('canvas');
+                if (actualCanvas) {
+                    const dataUrl = actualCanvas.toDataURL("image/png");
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    a.download = "custom_qr_code.png";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } else {
+                    alert("QR Code is not ready yet.");
+                }
             }
         });
     }
@@ -88,7 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const bcWidth = document.getElementById('bc-width');
     const bcHeight = document.getElementById('bc-height');
     const bcSvg = document.getElementById('bc-svg');
-    const bcDownloadBtn = document.getElementById('bc-download-png');
+    const bcDownloadPngBtn = document.getElementById('bc-download-png');
+    const bcDownloadSvgBtn = document.getElementById('bc-download-svg');
 
     function renderAdvancedBarcode() {
         if (!bcSvg) return;
@@ -119,28 +125,56 @@ document.addEventListener('DOMContentLoaded', () => {
     if(bcWidth) bcWidth.addEventListener('input', renderAdvancedBarcode);
     if(bcHeight) bcHeight.addEventListener('input', renderAdvancedBarcode);
 
-    if (bcDownloadBtn) {
-        bcDownloadBtn.addEventListener('click', () => {
-            const serializer = new XMLSerializer();
-            let source = serializer.serializeToString(bcSvg);
-            
-            // Add name spaces
-            if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
-                source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
-            }
-            if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
-                source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
-            }
-            
-            source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-            const url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
-            
+    function getSvgDataUrl() {
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(bcSvg);
+        
+        // Add name spaces
+        if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+            source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+        }
+        if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+            source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+        }
+        
+        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+        return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
+    }
+
+    if (bcDownloadSvgBtn) {
+        bcDownloadSvgBtn.addEventListener('click', () => {
             const a = document.createElement("a");
-            a.href = url;
+            a.href = getSvgDataUrl();
             a.download = "barcode.svg";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+        });
+    }
+
+    if (bcDownloadPngBtn) {
+        bcDownloadPngBtn.addEventListener('click', () => {
+            const url = getSvgDataUrl();
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                // Scale up slightly for better PNG quality
+                canvas.width = img.width * 2;
+                canvas.height = img.height * 2;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.scale(2, 2);
+                ctx.drawImage(img, 0, 0);
+                
+                const a = document.createElement("a");
+                a.href = canvas.toDataURL("image/png");
+                a.download = "barcode.png";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            };
+            img.src = url;
         });
     }
 

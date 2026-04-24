@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleFile(file) {
         if (!file.type.startsWith('image/')) {
-            alert('Please upload a valid image file (PNG, JPG, JPEG).');
+            alert('Please upload a valid image file (PNG, JPG, JPEG, SVG).');
             return;
         }
         currentFile = file;
@@ -78,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
         await new Promise((resolve) => img.onload = resolve);
 
         const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
+        canvas.width = img.width || 800; // fallback for SVG without explicit dimensions
+        canvas.height = img.height || 600;
         const ctx = canvas.getContext('2d');
         
         // If converting to JPEG, add white background for transparency
@@ -90,10 +90,21 @@ document.addEventListener('DOMContentLoaded', () => {
         
         ctx.drawImage(img, 0, 0);
 
+        let outputBlob;
+        let formatExt;
+
         // Convert canvas to target format
-        const outputBlob = await new Promise((resolve) => {
-            canvas.toBlob(resolve, targetFormat, quality);
-        });
+        if (targetFormat === 'image/svg+xml') {
+            const dataUrl = canvas.toDataURL('image/png');
+            const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}"><image href="${dataUrl}" width="${canvas.width}" height="${canvas.height}" /></svg>`;
+            outputBlob = new Blob([svgStr], { type: 'image/svg+xml' });
+            formatExt = 'SVG';
+        } else {
+            outputBlob = await new Promise((resolve) => {
+                canvas.toBlob(resolve, targetFormat, quality);
+            });
+            formatExt = targetFormat === 'image/jpeg' ? 'JPG' : 'PNG';
+        }
 
         if (convertedBlobUrl) URL.revokeObjectURL(convertedBlobUrl);
         convertedBlobUrl = URL.createObjectURL(outputBlob);
@@ -103,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const originalSize = utils.formatBytes(file.size);
         const newSize = utils.formatBytes(outputBlob.size);
-        const formatExt = targetFormat === 'image/jpeg' ? 'JPG' : 'PNG';
         
         sizeInfo.innerHTML = `Original: <strong>${originalSize}</strong> &nbsp;|&nbsp; New (${formatExt}): <strong>${newSize}</strong>`;
 

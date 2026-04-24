@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const amtEl = row.querySelector('.item-amt-display');
             if (amtEl) amtEl.textContent = '₹' + rowTotal.toFixed(2);
-
             totalTaxable += taxable;
             if (isIgst) totalIgst += taxAmt;
             else { totalCgst += taxAmt / 2; totalSgst += taxAmt / 2; }
@@ -71,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tr.style.borderBottom = '1px solid #e2e8f0';
         tr.innerHTML = `
             <td style="padding:6px 8px;">
-                <input type="text" class="inline-input" style="width:100%;box-sizing:border-box;" placeholder="Item description">
+                <textarea class="inline-textarea auto-resize" style="width:100%;box-sizing:border-box;overflow:hidden;" rows="1" placeholder="Item description"></textarea>
             </td>
             <td style="padding:6px 4px;">
                 <input type="text" class="inline-input" style="width:100%;box-sizing:border-box;text-align:center;" placeholder="HSN">
@@ -93,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </td>
         `;
         itemsBody.appendChild(tr);
-        tr.querySelectorAll('input').forEach(i => i.addEventListener('input', calculateEwb));
+        tr.querySelectorAll('input, textarea').forEach(i => i.addEventListener('input', calculateEwb));
         tr.querySelector('.remove-row-btn').addEventListener('click', () => { tr.remove(); calculateEwb(); });
         calculateEwb();
     }
