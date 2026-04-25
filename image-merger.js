@@ -70,7 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (imagesData.length > 0) {
-            previewContainer.classList.remove('hidden');
+            if(previewContainer) previewContainer.classList.remove('hidden');
+            const actions = document.getElementById('img-merge-actions');
+            if(actions) actions.classList.remove('hidden');
             renderMergedImage();
         }
     }

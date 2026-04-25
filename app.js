@@ -89,61 +89,59 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleRouting() {
-        let hash = window.location.hash.substring(1);
-        if (!hash) hash = 'home'; // default
+        const urlParams = new URLSearchParams(window.location.search);
+        let tool = urlParams.get('tool');
+        
+        // Find the default tab for this specific page (since we are multi-page now)
+        const firstTab = document.querySelector('.tab-content');
+        let activeTabId = firstTab ? firstTab.id : 'convert';
 
-        const targetElement = document.getElementById(hash);
-        if (targetElement) {
-            if (targetElement.classList.contains('tab-content')) {
-                activateMainTab(hash);
-            } else if (targetElement.classList.contains('sub-panel')) {
-                const parentTab = targetElement.closest('.tab-content');
+        // Map sub-panels if someone used an old hash or parameter
+        const possibleSubPanel = document.getElementById(tool);
+
+        if (possibleSubPanel) {
+            if (possibleSubPanel.classList.contains('tab-content')) {
+                activeTabId = tool;
+                activateMainTab(activeTabId);
+            } else if (possibleSubPanel.classList.contains('sub-panel')) {
+                const parentTab = possibleSubPanel.closest('.tab-content');
                 if (parentTab) {
-                    activateMainTab(parentTab.id);
-                    activateSubTab(hash);
+                    activeTabId = parentTab.id;
+                    activateMainTab(activeTabId);
+                    activateSubTab(tool);
                 }
             }
+        } else {
+            activateMainTab(activeTabId);
         }
     }
-
-    navButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetId = btn.getAttribute('data-target');
-            window.location.hash = targetId;
-
-            // Close mobile menu if open
-            if (appNav && appNav.classList.contains('open')) {
-                appNav.classList.remove('open');
-            }
-        });
-    });
 
     subNavBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetId = btn.getAttribute('data-target');
-            window.location.hash = targetId;
+            activateSubTab(targetId);
         });
     });
 
-    window.addEventListener('hashchange', handleRouting);
-    
     // Initial routing on load
     handleRouting();
 
 
     // ---- Conversion Tab Logic ----
-    const convertToolBtns = document.querySelectorAll('#convert .tool-card');
-    convertToolBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            convertToolBtns.forEach(b => b.classList.remove('active-tool'));
-            btn.classList.add('active-tool');
+    const convertSection = document.getElementById('convert');
+    if (convertSection) {
+        const convertToolBtns = convertSection.querySelectorAll('.tool-card');
+        convertToolBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                convertToolBtns.forEach(b => b.classList.remove('active-tool'));
+                btn.classList.add('active-tool');
+            });
         });
-    });
 
-    const convertUploadArea = document.getElementById('convert-upload');
-    const convertFileInput = document.getElementById('convert-file-input');
-    
-    convertUploadArea.addEventListener('click', () => convertFileInput.click());
+        const convertUploadArea = document.getElementById('convert-upload');
+        const convertFileInput = document.getElementById('convert-file-input');
+        
+        convertUploadArea.addEventListener('click', () => convertFileInput.click());
     
     convertUploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -442,6 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('convert-status').classList.add('hidden');
         currentConversionFile = null;
     });
+    }
 
     // ---- Image Compression Logic ----
     const imgCompressUploadArea = document.getElementById('img-compress-upload');
@@ -503,10 +502,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 await new Promise((resolve) => img.onload = resolve);
                 
                 const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
+                
+                const wInput = document.getElementById('resize-w');
+                const hInput = document.getElementById('resize-h');
+                let targetW = (wInput && wInput.value) ? parseInt(wInput.value) : img.width;
+                let targetH = (hInput && hInput.value) ? parseInt(hInput.value) : img.height;
+                
+                const maintainRatio = document.getElementById('maintain-ratio') && document.getElementById('maintain-ratio').checked;
+                if (maintainRatio) {
+                    if (wInput && wInput.value && (!hInput || !hInput.value)) {
+                        targetH = Math.round((targetW / img.width) * img.height);
+                    } else if (hInput && hInput.value && (!wInput || !wInput.value)) {
+                        targetW = Math.round((targetH / img.height) * img.width);
+                    }
+                }
+
+                canvas.width = targetW;
+                canvas.height = targetH;
                 const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
+                ctx.drawImage(img, 0, 0, targetW, targetH);
                 
                 const targetSizeInput = document.getElementById('compress-target-size');
                 const targetSizeKB = targetSizeInput && targetSizeInput.value ? parseFloat(targetSizeInput.value) : 0;

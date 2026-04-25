@@ -21,10 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render Title
         if (title) {
-            qrRenderTitle.innerText = title;
-            qrRenderTitle.style.display = 'block';
+            if (qrRenderTitle) {
+                qrRenderTitle.innerText = title;
+                qrRenderTitle.style.display = 'block';
+            }
         } else {
-            qrRenderTitle.style.display = 'none';
+            if (qrRenderTitle) qrRenderTitle.style.display = 'none';
         }
 
         // Use the utility to generate the QR on the canvas
@@ -62,23 +64,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (qrDownloadBtn) {
         qrDownloadBtn.addEventListener('click', () => {
-            // We need to merge the canvas and the title into one image if a title exists
-            const wrapper = document.getElementById('qr-render-wrapper');
-            if(wrapper) {
-                // simple hack: just download the canvas for now, as downloading the HTML wrapper requires html2canvas which isn't loaded.
-                // we'll just download the QR canvas.
-                const actualCanvas = qrCanvas.querySelector('canvas');
-                if (actualCanvas) {
-                    const dataUrl = actualCanvas.toDataURL("image/png");
-                    const a = document.createElement('a');
-                    a.href = dataUrl;
-                    a.download = "custom_qr_code.png";
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                } else {
-                    alert("QR Code is not ready yet.");
-                }
+            const actualCanvas = qrCanvas.querySelector('canvas');
+            if (actualCanvas) {
+                const dataUrl = actualCanvas.toDataURL("image/png");
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = "custom_qr_code.png";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } else {
+                alert("QR Code is not ready yet.");
             }
         });
     }

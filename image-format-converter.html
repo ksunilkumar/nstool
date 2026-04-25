@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Format Converter - PNG, JPG, SVG | Toolbox</title>
+    <meta name="description" content="Convert images between PNG, JPEG, and SVG formats instantly. Free drag-and-drop tool with quality control.">
+    <meta name="keywords" content="Image Converter, Convert PNG to JPG, Convert JPG to SVG, Free Image Tools">
+    <link rel="canonical" href="https://toolbox.nsindia.in/image-format-converter.html">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8663416879714051" crossorigin="anonymous"></script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Image Format Converter",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any"
+    }
+    </script>
+</head>
+
+<body>
+    <div id="ad-header" class="ad-slot ad-header"></div>
+    <header class="app-header">
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <span>Toolbox</span>
+        </div>
+
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <nav class="app-nav" id="app-nav">
+            <a href="pdf_image_convert.html" class="nav-btn" data-target="convert">Convert</a>
+            <a href="index.html" class="nav-btn" data-target="compress">Compress</a>
+            <a href="pdf-merger.html" class="nav-btn" data-target="merge">Merge Tools</a>
+            <a href="gst-invoice-generator.html" class="nav-btn" data-target="invoice">Invoices</a>
+            <a href="image-format-converter.html" class="nav-btn active" data-target="image-tools">Image Tools</a>
+            <a href="qr-barcode-generator.html" class="nav-btn" data-target="generators">Generators</a>
+        </nav>
+
+        <div class="header-actions">
+            <button id="theme-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
+                <svg id="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="layout-wrapper">
+        <aside class="sidebar-left sidebar"><div id="ad-sidebar-left" class="ad-slot ad-sidebar"></div></aside>
+
+        <main class="main-content">
+            <!-- Image Tools Tab -->
+            <section id="image-tools" class="tab-content active">
+                <div class="hero-section">
+                    <h1>Free Image Format Converter</h1>
+                    <p>Client-side image formatting. Convert PNG, JPG, and JPEG securely.</p>
+                </div>
+
+                <div class="invoice-layout">
+                    <!-- Converter Form -->
+                    <div class="card">
+                        <h3>Convert Format</h3>
+                        <div class="form-section mt-4">
+                            <div class="form-group">
+                                <label>Target Format</label>
+                                <select id="img-target-format">
+                                    <option value="image/jpeg">JPEG / JPG</option>
+                                    <option value="image/png">PNG</option>
+                                    <option value="image/svg+xml">SVG</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Quality (JPEG only)</label>
+                                <input type="range" id="img-quality" min="0.1" max="1.0" step="0.1" value="0.9" style="width: 100%;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+                                    <span>Low</span><span>High</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="upload-area mt-4" id="img-upload-area">
+                            <div class="upload-border">
+                                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <h3>Drag & Drop Image</h3>
+                                <p>PNG, JPG, JPEG, SVG</p>
+                                <input type="file" id="img-file-input" accept="image/png, image/jpeg, image/jpg, image/svg+xml" hidden>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Converter Preview -->
+                    <div class="card" id="img-preview-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px;">
+                        <div id="img-placeholder" style="color: var(--text-muted); text-align: center;">
+                            <p>Upload an image to see live preview</p>
+                        </div>
+                        <div id="img-result-container" class="hidden" style="width: 100%; text-align: center;">
+                            <img id="img-preview-element" style="max-width: 100%; max-height: 300px; border-radius: 8px; margin-bottom: 1rem;" />
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;" id="img-size-info"></p>
+                            <button id="img-download-btn" class="btn primary full-width">Download Converted Image</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <details class="seo-guidelines">
+                        <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                            📖 How to use Image Format Converter
+                        </summary>
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                            <p><strong>Step 1:</strong> Choose the Target Format (JPEG, PNG, or SVG) from the dropdown list.</p>
+                            <p><strong>Step 2:</strong> If converting to JPEG, adjust the quality slider to balance file size and visual fidelity.</p>
+                            <p><strong>Step 3:</strong> Drag & Drop the original image. A preview will immediately appear alongside exact dimensions and a download button.</p>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- SEO FAQ Section -->
+            <section id="faq" class="card mt-4" style="margin-top: 3rem;">
+                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Frequently Asked Questions</h3>
+                <div itemscope itemtype="https://schema.org/FAQPage">
+                    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+                        <h4 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">How secure is the Online Image Converter and Merger?</h4>
+                        <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                            <p itemprop="text" style="color: var(--text-muted);">Extremely secure. All conversions and merges happen client-side within your browser. No files are uploaded to any server.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <aside class="sidebar-right sidebar"><div id="ad-sidebar-right" class="ad-slot ad-sidebar"></div></aside>
+    </div>
+
+    <footer class="app-footer">
+        <div id="ad-footer" class="ad-slot ad-footer"></div>
+        <div class="footer-content" style="margin-top: 1rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+            <a href="https://toolbox.nsindia.in/supportpage.html" target="_blank" rel="noopener noreferrer" id="support-btn" style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; padding: 0.65rem 1.6rem; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.35); transition: transform 0.2s ease, box-shadow 0.2s ease; letter-spacing: 0.02em;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 25px rgba(244,63,94,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(244,63,94,0.35)'">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> Support Us
+            </a>
+            <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0;">&copy; 2026 Toolbox. All rights reserved. &nbsp;|&nbsp; Made with ❤️ in India</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
+    <script>
+        window.addEventListener('load', function() {
+            var pdfjs = window.pdfjsLib || window['pdfjs-dist/build/pdf'];
+            if (pdfjs) {
+                window.pdfjsLib = pdfjs;
+                pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="utils.js" defer></script>
+    <script src="barcode.js" defer></script>
+    <script src="invoice.js" defer></script>
+    <script src="ewaybill.js" defer></script>
+    <script src="simple-invoice.js" defer></script>
+    <script src="image-tools.js" defer></script>
+    <script src="generators.js" defer></script>
+    <script src="pdf-merger.js" defer></script>
+    <script src="image-merger.js" defer></script>
+    <script src="ads.js" defer></script>
+    <script src="app.js" defer></script>
+</body>
+</html>
