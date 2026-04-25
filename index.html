@@ -105,8 +105,8 @@
                 <div class="card tools-grid">
                     <button class="tool-card active-tool" data-type="pdf-img">PDF to Image</button>
                     <button class="tool-card" data-type="img-pdf">Image to PDF</button>
-                    <button class="tool-card" data-type="doc-pdf">DOC to PDF</button>
-                    <button class="tool-card" data-type="pdf-doc">PDF to DOC</button>
+                    <button class="tool-card" data-type="docx-pdf">DOCX to PDF</button>
+                    <button class="tool-card" data-type="pdf-docx">PDF to DOCX</button>
                 </div>
 
                 <div class="card upload-area" id="convert-upload">
@@ -132,6 +132,19 @@
 
                 <div id="convert-result" class="result-area hidden">
                     <button id="convert-download-btn" class="btn primary">Download Converted File</button>
+                </div>
+
+                <div class="card mt-4">
+                    <details class="seo-guidelines">
+                        <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                            📖 How to use Document Conversion
+                        </summary>
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                            <p><strong>Step 1:</strong> Select the exact conversion type you need (e.g., DOCX to PDF, PDF to Image, or PDF to DOCX).</p>
+                            <p><strong>Step 2:</strong> Drag and drop your document into the upload area or click to browse files.</p>
+                            <p><strong>Step 3:</strong> Wait a few seconds while our fast client-side processor securely converts your file without sending data to external servers. Click download when ready.</p>
+                        </div>
+                    </details>
                 </div>
 
                 <div id="ad-in-content-1" class="ad-slot ad-in-content"></div>
@@ -171,9 +184,8 @@
                                 <label for="maintain-ratio">Maintain Aspect Ratio</label>
                             </div>
                             <div class="form-group mt-2">
-                                <label>Compression Quality</label>
-                                <input type="range" id="compress-quality" min="0.1" max="1.0" step="0.1" value="0.7"
-                                    style="width: 100%;">
+                                <label>Target Size (KB)</label>
+                                <input type="number" id="compress-target-size" placeholder="e.g. 200" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;">
                             </div>
                         </div>
 
@@ -197,10 +209,22 @@
                                 <p id="img-compress-status-text" class="status-text">Compressing...</p>
                             </div>
                             <div id="img-compress-result" class="result-area hidden">
-                                <button id="img-compress-download-btn" class="btn primary">Download Compressed
-                                    Image</button>
+                                <button id="img-compress-download-btn" class="btn primary">Download Compressed Image</button>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <details class="seo-guidelines">
+                            <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                                📖 How to use Image Compression
+                            </summary>
+                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Optional: Specify exact resize dimensions (Width and Height in px) if needed. Maintain Aspect Ratio is recommended.</p>
+                                <p><strong>Step 2:</strong> Set the Target Size in KB. The tool will automatically find the best quality to fit your target size.</p>
+                                <p><strong>Step 3:</strong> Upload your image (JPG, PNG, JPEG). The local browser optimizer will compress it instantly and provide a download link.</p>
+                            </div>
+                        </details>
                     </div>
                 </div>
 
@@ -243,10 +267,22 @@
                                 <p id="pdf-compress-status-text" class="status-text">Compressing...</p>
                             </div>
                             <div id="pdf-compress-result" class="result-area hidden">
-                                <button id="pdf-compress-download-btn" class="btn primary">Download Compressed
-                                    PDF</button>
+                                <button id="pdf-compress-download-btn" class="btn primary">Download Compressed PDF</button>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <details class="seo-guidelines">
+                            <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                                📖 How to use PDF Compression
+                            </summary>
+                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Select your desired Optimization Level: Recommended, Extreme (smallest size), or Less (higher quality).</p>
+                                <p><strong>Step 2:</strong> Upload your PDF file. Larger files might take a moment to compress because the optimization process runs securely on your local device.</p>
+                                <p><strong>Step 3:</strong> Once compression is complete, click to download the significantly smaller PDF without quality loss.</p>
+                            </div>
+                        </details>
                     </div>
                 </div>
 
@@ -296,6 +332,19 @@
                             <button id="pdf-merge-btn" class="btn primary full-width">Merge PDFs</button>
                         </div>
                     </div>
+
+                    <div class="card mt-4">
+                        <details class="seo-guidelines">
+                            <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                                📖 How to use PDF Merger
+                            </summary>
+                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Click "Add PDFs" to select multiple PDF files, or drag and drop them into the area.</p>
+                                <p><strong>Step 2:</strong> Rearrange the files by dragging them up or down in the list to set the final page order.</p>
+                                <p><strong>Step 3:</strong> Click "Merge PDFs" to combine all selected documents into a single, cohesive PDF file instantly in your browser.</p>
+                            </div>
+                        </details>
+                    </div>
                 </div>
 
                 <!-- Image Merger Panel -->
@@ -332,9 +381,21 @@
                             style="margin-top: 1.5rem; text-align: center;">
                             <canvas id="img-merge-canvas"
                                 style="max-width: 100%; border: 1px solid var(--border); border-radius: 8px;"></canvas>
-                            <button id="img-merge-btn" class="btn primary full-width mt-4">Download Merged
-                                Image</button>
+                            <button id="img-merge-btn" class="btn primary full-width mt-4">Download Merged Image</button>
                         </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <details class="seo-guidelines">
+                            <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                                📖 How to use Image Merger
+                            </summary>
+                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Choose whether you want to stack images Vertically or place them Horizontally (side-by-side).</p>
+                                <p><strong>Step 2:</strong> Upload all the images you wish to combine. The tool supports PNG, JPG, and JPEG formats.</p>
+                                <p><strong>Step 3:</strong> View the live preview canvas to ensure the alignment is correct, then click download to save the single merged image.</p>
+                            </div>
+                        </details>
                     </div>
                 </div>
 
@@ -509,6 +570,20 @@
                             </div>
 
                         </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <details class="seo-guidelines">
+                            <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                                📖 How to use the Simple Invoice Generator
+                            </summary>
+                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Upload your company logo and fill in the editable [Business Name] and [Business Address] templates.</p>
+                                <p><strong>Step 2:</strong> Enter your client details, reference number, and set the correct invoice date and ID.</p>
+                                <p><strong>Step 3:</strong> Click "+ Add Line" to add services or products. The total amounts, including balance due, will calculate automatically.</p>
+                                <p><strong>Step 4:</strong> Click "Export Invoice as PDF" to generate a professional A4 PDF for printing or emailing to your clients.</p>
+                            </div>
+                        </details>
                     </div>
                 </div>
 
@@ -699,6 +774,21 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <details class="seo-guidelines">
+                            <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                                📖 How to use the GST Invoice Maker
+                            </summary>
+                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Enter your Supplier Details, including your GSTIN, Address, and Name.</p>
+                                <p><strong>Step 2:</strong> Enter the Buyer (Billed To) Details, including their GSTIN and Address.</p>
+                                <p><strong>Step 3:</strong> Select the Tax Type (CGST + SGST or IGST). The table will dynamically update to reflect your choice.</p>
+                                <p><strong>Step 4:</strong> Add items with HSN/SAC codes, Quantities, Rates, and specific GST percentages. Total taxes and Grand Total are computed instantly.</p>
+                                <p><strong>Step 5:</strong> Export as a standardized PDF invoice perfectly formatted for Indian GST compliance.</p>
+                            </div>
+                        </details>
                     </div>
                 </div>
 
@@ -929,6 +1019,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="card mt-4">
+                        <details class="seo-guidelines">
+                            <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                                📖 How to generate an E-Way Bill
+                            </summary>
+                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Input the official E-Way Bill No. and set the Date along with the applicable Tax Type.</p>
+                                <p><strong>Step 2:</strong> Complete Part A by entering Supplier (Consignor) and Recipient (Consignee) GSTINs and addresses.</p>
+                                <p><strong>Step 3:</strong> Add Goods Details including HSN, Rate, and GST percentages to calculate the Taxable and Total Values.</p>
+                                <p><strong>Step 4:</strong> Complete Part B with Transporter Name, Vehicle Number, and Distance (KM).</p>
+                                <p><strong>Step 5:</strong> Generate the PDF. Barcodes and QR Codes are automatically mapped to your E-Way bill data for fast scanning.</p>
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </section>
 
@@ -995,6 +1100,19 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="card mt-4">
+                    <details class="seo-guidelines">
+                        <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                            📖 How to use Image Format Converter
+                        </summary>
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                            <p><strong>Step 1:</strong> Choose the Target Format (JPEG, PNG, or SVG) from the dropdown list.</p>
+                            <p><strong>Step 2:</strong> If converting to JPEG, adjust the quality slider to balance file size and visual fidelity.</p>
+                            <p><strong>Step 3:</strong> Drag & Drop the original image. A preview will immediately appear alongside exact dimensions and a download button.</p>
+                        </div>
+                    </details>
+                </div>
             </section>
 
             <!-- Generators Tab -->
@@ -1059,6 +1177,20 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="card mt-4">
+                        <details class="seo-guidelines">
+                            <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                                📖 How to use the QR Code Maker
+                            </summary>
+                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Enter the Content you want encoded (like a Website URL, VCard, or Text).</p>
+                                <p><strong>Step 2:</strong> Customize the aesthetic by picking custom Foreground and Background colors to match your brand.</p>
+                                <p><strong>Step 3:</strong> Add an optional Title to display below the QR code, or upload a Center Logo to overlay an icon inside the code.</p>
+                                <p><strong>Step 4:</strong> Click "Download PNG" to export a high-resolution, scannable QR Code image.</p>
+                            </div>
+                        </details>
+                    </div>
                 </div>
 
                 <!-- Barcode Panel -->
@@ -1107,6 +1239,20 @@
                                 <button class="btn secondary full-width" id="bc-download-svg">Download SVG</button>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="card mt-4">
+                        <details class="seo-guidelines">
+                            <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
+                                📖 How to use the Barcode Generator
+                            </summary>
+                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Select the required Format standard (e.g., CODE128 for alphanumeric, EAN-13, or UPC for products).</p>
+                                <p><strong>Step 2:</strong> Enter the numeric or alphanumeric Value to be encoded into the barcode lines.</p>
+                                <p><strong>Step 3:</strong> Fine-tune the appearance using the Width and Height sliders.</p>
+                                <p><strong>Step 4:</strong> Download the final barcode as either a rasterized PNG or a scalable vector SVG file for professional printing.</p>
+                            </div>
+                        </details>
                     </div>
                 </div>
             </section>

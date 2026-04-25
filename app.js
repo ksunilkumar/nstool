@@ -201,15 +201,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (activeTool) {
             toolType = activeTool.getAttribute('data-type');
             if (toolType === 'pdf-img') ext = 'png';
-            if (toolType === 'img-pdf' || toolType === 'doc-pdf') ext = 'pdf';
-            if (toolType === 'pdf-doc') ext = 'doc';
+            if (toolType === 'img-pdf' || toolType === 'docx-pdf') ext = 'pdf';
+            if (toolType === 'pdf-docx') ext = 'docx';
         }
         
         const newName = `${base}_converted.${ext}`;
         let downloadUrl = '';
 
         try {
-            if (toolType === 'img-pdf' && currentConversionFile.type.startsWith('image/')) {
+            if (toolType === 'img-pdf') {
                 // Real Image to PDF conversion using jsPDF
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pdfBlob = doc.output('blob');
                 downloadUrl = URL.createObjectURL(pdfBlob);
                 
-            } else if (toolType === 'pdf-img' && currentConversionFile.type === 'application/pdf') {
+            } else if (toolType === 'pdf-img') {
                 // Real PDF to Image using PDF.js
                 const _pdfLib = ensurePdfWorker(getPdfLib());
                 if (!_pdfLib) { alert('PDF library not loaded. Please refresh.'); return; }
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pngBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 downloadUrl = URL.createObjectURL(pngBlob);
                 
-            } else if (toolType === 'doc-pdf') {
+            } else if (toolType === 'docx-pdf') {
                 const fileExt = currentConversionFile.name.split('.').pop().toLowerCase();
                 if (fileExt === 'doc') {
                     alert('Legacy .doc format is not supported in the browser.\nPlease open your file in Word and Save As → .docx format, then try again.');
@@ -319,8 +319,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         },
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     };
-                    const pdfBlob = await html2pdf().set(pdfOptions).from(renderContainer).outputPdf('blob');
-                    downloadUrl = URL.createObjectURL(pdfBlob);
+                    await html2pdf().set(pdfOptions).from(renderContainer).save();
+                    
+                    document.body.removeChild(renderContainer);
+                    document.getElementById('convert-result').classList.add('hidden');
+                    document.getElementById('convert-status').classList.add('hidden');
+                    currentConversionFile = null;
+                    return;
                 } catch(pdfErr) {
                     console.error('PDF render error:', pdfErr);
                     // Fallback: plain text via jsPDF
@@ -342,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } finally {
                     document.body.removeChild(renderContainer);
                 }
-            } else if (toolType === 'pdf-doc' && currentConversionFile.type === 'application/pdf') {
+            } else if (toolType === 'pdf-docx') {
                 // Resolve pdfjsLib safely at call-time
                 const pdfLib = ensurePdfWorker(getPdfLib());
                 if (!pdfLib) {
@@ -413,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     '</html>'
                 ].join('\n');
 
-                const docBlob = new Blob([wordDoc], { type: 'application/msword' });
+                const docBlob = new Blob([wordDoc], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
                 downloadUrl = URL.createObjectURL(docBlob);
             } else {
                 downloadUrl = URL.createObjectURL(currentConversionFile);
@@ -503,10 +508,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
                 
-                const qualityInput = document.getElementById('compress-quality');
-                const quality = qualityInput ? parseFloat(qualityInput.value) : 0.7;
+                const targetSizeInput = document.getElementById('compress-target-size');
+                const targetSizeKB = targetSizeInput && targetSizeInput.value ? parseFloat(targetSizeInput.value) : 0;
 
-                const compressedBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+                let compressedBlob;
+                if (targetSizeKB > 0) {
+                    const targetBytes = targetSizeKB * 1024;
+                    let low = 0.01;
+                    let high = 1.0;
+                    let bestBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', low));
+                    
+                    if (bestBlob.size <= targetBytes) {
+                        for (let i = 0; i < 7; i++) {
+                            let mid = (low + high) / 2;
+                            let tempBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', mid));
+                            if (tempBlob.size <= targetBytes) {
+                                bestBlob = tempBlob;
+                                low = mid;
+                            } else {
+                                high = mid;
+                            }
+                        }
+                    }
+                    compressedBlob = bestBlob;
+                } else {
+                    compressedBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.7));
+                }
+
                 downloadUrl = URL.createObjectURL(compressedBlob);
 
                 const a = document.createElement('a');
