@@ -127,14 +127,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const speak = () => {
-        if (synth.speaking) {
-            console.error('speechSynthesis.speaking');
-            return;
-        }
+        // Cancel any ongoing or stuck speech to fix browser API bugs
+        synth.cancel();
+
+        // Reset UI state just in case
+        isPaused = false;
+        updateUIState(false, false);
 
         const text = textInput.value.trim();
         if (text !== '') {
             const utterThis = new SpeechSynthesisUtterance(text);
+            window.__currentUtterance = utterThis; // Prevent garbage collection bug in Chrome
             
             const selectedOption = voiceSelect.options[voiceSelect.selectedIndex];
             if (selectedOption && selectedOption.value !== "") {
@@ -235,15 +238,40 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const url = `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${langCode}&q=${encodeURIComponent(text)}`;
+        const baseUrl = `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${langCode}&q=${encodeURIComponent(text)}`;
         
-        // Open in new tab which will trigger the browser's native media player/download
-        const a = document.createElement('a');
-        a.href = url;
-        a.target = '_blank';
-        a.download = 'audio.mp3';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        // Google Translate API blocks cross-origin fetch requests (CORS).
+        // corsproxy.io is returning 403 Forbidden, so we use allorigins.win instead.
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(baseUrl)}`;
+        
+        const originalText = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = "Downloading...";
+        downloadBtn.disabled = true;
+
+        fetch(proxyUrl)
+            .then(response => {
+                if (!response.ok) throw new Error("Network response was not ok");
+                return response.json();
+            })
+            .then(data => {
+                if (!data.contents) throw new Error("No audio content returned");
+                
+                // data.contents is a base64 Data URI (data:audio/mpeg;base64,...)
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = data.contents;
+                a.download = 'toolbox-audio.mp3';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            })
+            .catch(error => {
+                console.error('Download failed:', error);
+                alert('Failed to download audio. Please check your connection or try again later.');
+            })
+            .finally(() => {
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+            });
     });
 });
