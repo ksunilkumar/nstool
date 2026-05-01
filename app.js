@@ -187,8 +187,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.getElementById('convert-download-btn').addEventListener('click', async () => {
+    document.getElementById('convert-download-btn').addEventListener('click', async function() {
         if (!currentConversionFile) return;
+        
+        const btn = this;
+        const originalText = btn.innerText;
+        btn.innerText = "Converting... Please Wait";
+        btn.disabled = true;
         
         const nameParts = currentConversionFile.name.split('.');
         let ext = nameParts.length > 1 ? nameParts.pop() : '';
@@ -200,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
             toolType = activeTool.getAttribute('data-type');
             if (toolType === 'pdf-img') ext = 'png';
             if (toolType === 'img-pdf' || toolType === 'docx-pdf') ext = 'pdf';
-            if (toolType === 'pdf-docx') ext = 'docx';
+            if (toolType === 'pdf-docx') ext = 'doc'; // Save as .doc so MS Word seamlessly opens the generated HTML
         }
         
         const newName = `${base}_converted.${ext}`;
@@ -261,71 +266,77 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fileExt = currentConversionFile.name.split('.').pop().toLowerCase();
                 if (fileExt === 'doc') {
                     alert('Legacy .doc format is not supported in the browser.\nPlease open your file in Word and Save As → .docx format, then try again.');
+                    btn.innerText = originalText;
+                    btn.disabled = false;
                     document.getElementById('convert-result').classList.add('hidden');
                     document.getElementById('convert-status').classList.add('hidden');
                     currentConversionFile = null;
                     return;
                 }
                 if (!window.mammoth) {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
                     alert('Document converter library not loaded. Please refresh the page and try again.');
                     return;
                 }
 
-                // Step 1: Parse DOCX → HTML with mammoth
+                // Step 1: Parse DOCX → HTML or Text with mammoth
                 const docArrayBuffer = await currentConversionFile.arrayBuffer();
                 let mammothResult;
                 try {
                     mammothResult = await window.mammoth.convertToHtml({ arrayBuffer: docArrayBuffer });
+                    if (!mammothResult.value || mammothResult.value.trim() === '') {
+                        mammothResult = await window.mammoth.extractRawText({ arrayBuffer: docArrayBuffer });
+                    }
                 } catch(mammothErr) {
                     console.error('Mammoth error:', mammothErr);
+                    btn.innerText = originalText;
+                    btn.disabled = false;
                     alert('Could not parse the document. Please ensure it is a valid .docx file.');
                     return;
                 }
-                const docHtml = mammothResult.value || '<p>No content could be extracted from this document.</p>';
+                
+                let docHtml = mammothResult.value;
+                if (!docHtml || docHtml.trim() === '') {
+                    docHtml = '<p>No content could be extracted from this document.</p>';
+                } else if (docHtml.indexOf('<') === -1) {
+                    // Wrap raw text nicely if no HTML tags exist
+                    docHtml = '<p>' + docHtml.replace(/\n/g, '<br>') + '</p>';
+                }
 
-                // Step 2: Build a styled, renderable container off-screen
+                // Step 2: Build a styled container and append it behind the scenes
                 const renderContainer = document.createElement('div');
-                renderContainer.style.cssText = [
-                    'position: fixed',
-                    'left: -9999px',
-                    'top: 0',
-                    'width: 794px',           // A4 width in pixels at 96dpi
-                    'background: #ffffff',
-                    'color: #000000',
-                    'font-family: Arial, sans-serif',
-                    'font-size: 13px',
-                    'line-height: 1.7',
-                    'padding: 50px 60px',
-                    'box-sizing: border-box',
-                    'z-index: -1000'
-                ].join(';');
                 renderContainer.innerHTML = docHtml;
+                // Position absolute keeps it in DOM for html2canvas to read, but zIndex hides it behind everything
+                renderContainer.style.cssText = 'width:794px; padding:40px; background:#ffffff; color:#000000; font-family:Arial,sans-serif; font-size:14px; line-height:1.6; position:absolute; top:0; left:0; z-index:-100;';
                 document.body.appendChild(renderContainer);
 
                 // Step 3: Render to PDF using html2pdf
                 try {
                     const pdfOptions = {
-                        margin: 10,
+                        margin: 15,
                         filename: newName,
-                        image: { type: 'jpeg', quality: 0.95 },
+                        image: { type: 'jpeg', quality: 0.98 },
                         html2canvas: {
                             scale: 2,
                             useCORS: true,
-                            allowTaint: true,
-                            logging: false,
-                            backgroundColor: '#ffffff'
+                            logging: false
                         },
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     };
-                    await html2pdf().set(pdfOptions).from(renderContainer).save();
+                    await window.html2pdf().set(pdfOptions).from(renderContainer).save();
                     
                     document.body.removeChild(renderContainer);
+                    btn.innerText = originalText;
+                    btn.disabled = false;
                     document.getElementById('convert-result').classList.add('hidden');
                     document.getElementById('convert-status').classList.add('hidden');
                     currentConversionFile = null;
                     return;
                 } catch(pdfErr) {
                     console.error('PDF render error:', pdfErr);
+                    if (renderContainer.parentNode) document.body.removeChild(renderContainer);
+                    
                     // Fallback: plain text via jsPDF
                     const { jsPDF } = window.jspdf;
                     const fallbackDoc = new jsPDF();
@@ -342,13 +353,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         yPos += 7;
                     }
                     downloadUrl = URL.createObjectURL(fallbackDoc.output('blob'));
-                } finally {
-                    document.body.removeChild(renderContainer);
                 }
             } else if (toolType === 'pdf-docx') {
                 // Resolve pdfjsLib safely at call-time
                 const pdfLib = ensurePdfWorker(getPdfLib());
                 if (!pdfLib) {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
                     alert('PDF reader library not loaded. Please refresh the page and try again.');
                     return;
                 }
@@ -416,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     '</html>'
                 ].join('\n');
 
-                const docBlob = new Blob([wordDoc], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                const docBlob = new Blob([wordDoc], { type: 'application/msword' });
                 downloadUrl = URL.createObjectURL(docBlob);
             } else {
                 downloadUrl = URL.createObjectURL(currentConversionFile);
@@ -436,6 +447,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Reset UI state for next upload
+        btn.innerText = originalText;
+        btn.disabled = false;
         document.getElementById('convert-result').classList.add('hidden');
         document.getElementById('convert-status').classList.add('hidden');
         currentConversionFile = null;

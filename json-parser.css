@@ -1,0 +1,160 @@
+/* JSON Parser Tool Styles */
+
+.tb-json-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .tb-json-container {
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .tb-json-editor-card,
+    .tb-json-viewer-card {
+        flex: 1;
+        width: 50%;
+    }
+}
+
+.tb-json-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tb-json-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+}
+
+.tb-json-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tb-json-editor-wrapper,
+.tb-json-viewer-wrapper {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-body);
+    overflow: hidden;
+    height: 500px; /* Fixed height for clean UI */
+    display: flex;
+    flex-direction: column;
+}
+
+.tb-json-textarea {
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    border: none;
+    resize: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95rem;
+    background: transparent;
+    color: var(--text-dark);
+    line-height: 1.5;
+    outline: none;
+}
+
+.tb-json-textarea:focus {
+    box-shadow: inset 0 0 0 2px var(--primary-light);
+}
+
+.tb-json-output-display {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 1rem;
+    overflow: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    background: transparent;
+    color: var(--text-dark);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.tb-json-error-msg {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid var(--danger);
+    color: var(--danger);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    word-break: break-word;
+}
+
+.tb-json-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    color: var(--primary);
+    z-index: 10;
+}
+
+.dark-mode .tb-json-loading {
+    background: rgba(30, 41, 59, 0.8);
+}
+
+/* Syntax Highlighting Colors */
+.tb-json-key {
+    color: #c7254e; /* dark red for keys */
+    font-weight: 600;
+}
+
+.tb-json-string {
+    color: #065f46; /* green for strings */
+}
+
+.tb-json-number {
+    color: #1d4ed8; /* blue for numbers */
+}
+
+.tb-json-boolean {
+    color: #d97706; /* orange/yellow for boolean */
+    font-weight: bold;
+}
+
+.tb-json-null {
+    color: #6b7280; /* gray for null */
+    font-style: italic;
+}
+
+/* Dark mode adjustments for syntax highlighting */
+.dark-mode .tb-json-key {
+    color: #fca5a5; /* light red */
+}
+
+.dark-mode .tb-json-string {
+    color: #6ee7b7; /* light green */
+}
+
+.dark-mode .tb-json-number {
+    color: #93c5fd; /* light blue */
+}
+
+.dark-mode .tb-json-boolean {
+    color: #fcd34d; /* light yellow */
+}
+
+.dark-mode .tb-json-null {
+    color: #9ca3af; /* light gray */
+}
