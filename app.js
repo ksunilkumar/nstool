@@ -685,6 +685,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // ---- Sub-Navigation Logic Handled By Router ----
-    // (Removed duplicate subNavBtns click listeners as they are now managed by the hash router above)
+    // ---- Dynamic Compliance Footer Links (About, Contact, Privacy) ----
+    const supportBtn = document.getElementById('support-btn');
+    if (supportBtn) {
+        if (!document.getElementById('compliance-footer-links')) {
+            const linksDiv = document.createElement('div');
+            linksDiv.id = 'compliance-footer-links';
+            linksDiv.className = 'footer-links';
+            linksDiv.style.cssText = 'margin-top: 1.5rem; display: flex; gap: 1.5rem; justify-content: center; font-size: 0.9rem; font-family: "Inter", sans-serif;';
+            
+            linksDiv.innerHTML = `
+                <a href="about.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">About Us</a>
+                <span style="color: var(--text-muted);">|</span>
+                <a href="contact.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Contact Us</a>
+                <span style="color: var(--text-muted);">|</span>
+                <a href="privacy.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Privacy Policy</a>
+            `;
+            
+            supportBtn.parentNode.insertBefore(linksDiv, supportBtn.nextSibling);
+        }
+    }
 });
+

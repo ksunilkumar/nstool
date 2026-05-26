@@ -1,42 +1,29 @@
-<!-- toolbox_horizontal -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8663416879714051"
+<!-- Google AdSense Horizontal (Header & In-Content 1) -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3463984380249560"
      crossorigin="anonymous"></script>
 <ins class="adsbygoogle"
      style="display:block"
-     data-ad-client="ca-pub-8663416879714051"
-     data-ad-slot="9438941740"
+     data-ad-client="ca-pub-3463984380249560"
+     data-ad-slot="4359928318"
      data-ad-format="auto"
      data-full-width-responsive="true"></ins>
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 
-
-
-<!-- toolbox_verticle -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8663416879714051"
+<!-- Google AdSense Vertical (Left & Right Sidebars) -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3463984380249560"
      crossorigin="anonymous"></script>
 <ins class="adsbygoogle"
      style="display:block"
-     data-ad-client="ca-pub-8663416879714051"
-     data-ad-slot="4228659271"
+     data-ad-client="ca-pub-3463984380249560"
+     data-ad-slot="3046846648"
      data-ad-format="auto"
      data-full-width-responsive="true"></ins>
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 
-
-
-<!-- toobox_square -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8663416879714051"
-     crossorigin="anonymous"></script>
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-8663416879714051"
-     data-ad-slot="8647462611"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+<!-- Adsterra Native Banner (In-Content 2) -->
+<script async="async" data-cfasync="false" src="https://pl29385278.effectivecpmnetwork.com/e4afa7a018eee0d6bec2ec105afde9dd/invoke.js"></script>
+<div id="container-e4afa7a018eee0d6bec2ec105afde9dd"></div>

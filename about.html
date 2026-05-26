@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Toolbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3463984380249560" crossorigin="anonymous"></script>
+    <script src="ads.js" defer></script>
+    <style>
+        .compliance-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .compliance-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: var(--card-backdrop);
+        }
+        .compliance-card h1 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary);
+            margin-bottom: 24px;
+            font-size: 2.2rem;
+            text-align: center;
+        }
+        .compliance-card h2 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            margin-top: 28px;
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+        }
+        .compliance-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            font-size: 1rem;
+        }
+        .compliance-card ul {
+            color: var(--text-muted);
+            margin-left: 20px;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        .compliance-card li {
+            margin-bottom: 8px;
+        }
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 24px;
+            transition: var(--transition);
+        }
+        .back-home:hover {
+            color: var(--primary-hover);
+            transform: translateX(-4px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Area -->
+    <header style="height: var(--header-height); border-bottom: 1px solid var(--border); background: var(--bg-secondary); display: flex; align-items: center; justify-content: space-between; padding: 0 40px;">
+        <div class="logo" style="display: flex; align-items: center; gap: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-main);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span style="color: var(--text-main);">Toolbox</span>
+        </div>
+        <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-weight: 500; transition: var(--transition);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">Back to Home</a>
+    </header>
+
+    <!-- Ad Header Slot -->
+    <div id="ad-header" class="ad-slot ad-header" style="margin: 20px auto; text-align: center;"></div>
+
+    <!-- Main Content -->
+    <div class="compliance-container">
+        <a href="index.html" class="back-home">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back to Home
+        </a>
+
+        <div class="compliance-card">
+            <h1>About Us</h1>
+            <p>Welcome to <strong>Toolbox</strong>, your ultimate destination for high-quality, fast, and secure web-based utilities. We specialize in providing tools that make your digital life easier and more efficient, entirely inside your browser.</p>
+            
+            <h2>Our Mission</h2>
+            <p>At Toolbox, our mission is to empower developers, designers, professionals, and daily internet users by offering a rich set of online utilities. We believe that tools like file conversion, PDF merging, barcode generation, and code formatting should be free, accessible, and fast, without compromising your privacy.</p>
+            
+            <h2>Why Choose Toolbox?</h2>
+            <ul>
+                <li><strong>Privacy First:</strong> The majority of our tools process files and data directly inside your web browser. This means your files never leave your device, ensuring maximum privacy and security.</li>
+                <li><strong>No Installation Required:</strong> Run tools instantly on any device (desktop, tablet, or mobile) without installing complex software.</li>
+                <li><strong>Beautiful & Modern Design:</strong> A clean, responsive interface optimized for usability, speed, and comfort (including dark mode).</li>
+                <li><strong>Completely Free:</strong> Access all premium tool capabilities without subscriptions or hidden costs. We sustain our services via clean, non-intrusive advertisements.</li>
+            </ul>
+
+            <h2>What We Offer</h2>
+            <p>We provide a wide array of specialized tools designed for daily digital tasks:</p>
+            <ul>
+                <li><strong>File & Image Tools:</strong> Compress images, convert formats (like SVG, PNG, and JPG), and generate barcode/QR codes.</li>
+                <li><strong>PDF Utilities:</strong> Merge multiple PDFs, convert PDF to images, and optimize document size.</li>
+                <li><strong>Developer Utilities:</strong> Format and parse JSON, generate invoices, and text-to-audio converter.</li>
+            </ul>
+
+            <h2>Contact Our Team</h2>
+            <p>If you have any suggestions, feature requests, or questions, we'd love to hear from you. Visit our <a href="contact.html" style="color: var(--primary); text-decoration: none; font-weight: 500;">Contact Us</a> page or email us directly at <a href="mailto:nsindia@zohomail.in" style="color: var(--primary); text-decoration: none; font-weight: 500;">nsindia@zohomail.in</a>.</p>
+        </div>
+    </div>
+
+    <!-- Ad Footer Slot -->
+    <div id="ad-footer" class="ad-slot ad-footer" style="margin: 20px auto; text-align: center;"></div>
+</body>
+</html>
