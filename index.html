@@ -4,17 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <title>Free Online Image & PDF Compressor | Reduce JPG, PNG & PDF File Size Securely</title>
-    <meta name="description" content="Compress PDF, JPG, PNG, and JPEG files instantly in your browser. Reduce image size to a target KB (e.g., 200KB) without losing quality. 100% free, secure, and fast.">
-    <meta name="keywords" content="Compress PDF online, free Image Compressor, reduce PDF size, compress JPG to 200KB, optimize PNG, compress JPEG online, reduce image file size, PDF shrinker online, resize image to specific KB, offline image compression in browser, free PDF size reducer, picture compressor tool">
+    <meta name="description"
+        content="Compress PDF, JPG, PNG, and JPEG files instantly in your browser. Reduce image size to a target KB (e.g., 200KB) without losing quality. 100% free, secure, and fast.">
+    <meta name="keywords"
+        content="Compress PDF online, free Image Compressor, reduce PDF size, compress JPG to 200KB, optimize PNG, compress JPEG online, reduce image file size, PDF shrinker online, resize image to specific KB, offline image compression in browser, free PDF size reducer, picture compressor tool">
     <link rel="canonical" href="https://toolbox.nsindia.in/">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-
-    <!-- Monetag Multitag � site-wide: In-Page Push, Popunder, Vignette -->
-    <script>(function(s){s.dataset.zone='11049792',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <script type="application/ld+json">
     {
@@ -37,12 +38,22 @@
     <div id="ad-header" class="ad-slot ad-header"></div>
     <header class="app-header">
         <div class="logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
             <span>Toolbox</span>
         </div>
 
         <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
         </button>
 
         <nav class="app-nav" id="app-nav">
@@ -58,13 +69,18 @@
 
         <div class="header-actions">
             <button id="theme-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
-                <svg id="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <svg id="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
             </button>
         </div>
     </header>
 
     <div class="layout-wrapper">
-        <aside class="sidebar-left sidebar"><div id="ad-sidebar-left" class="ad-slot ad-sidebar"></div></aside>
+        <aside class="sidebar-left sidebar">
+            <div id="ad-sidebar-left" class="ad-slot ad-sidebar"></div>
+        </aside>
 
         <main class="main-content">
             <section id="compress" class="tab-content active">
@@ -101,23 +117,33 @@
                             </div>
                             <div class="form-group mt-2">
                                 <label>Target Size (KB)</label>
-                                <input type="number" id="compress-target-size" placeholder="e.g. 200" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;">
+                                <input type="number" id="compress-target-size" placeholder="e.g. 200"
+                                    style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;">
                             </div>
                         </div>
 
                         <div class="card column compress-upload upload-area" id="img-compress-upload">
                             <div class="upload-border">
-                                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
                                 <h3>Upload Image to Compress</h3>
                                 <p>JPG, PNG, JPEG</p>
                                 <input type="file" id="img-compress-file-input" accept="image/*" hidden>
                             </div>
                             <div id="img-compress-status" class="status-area hidden">
-                                <div class="progress-bar"><div id="img-compress-progress" class="progress-fill"></div></div>
+                                <div class="progress-bar">
+                                    <div id="img-compress-progress" class="progress-fill"></div>
+                                </div>
                                 <p id="img-compress-status-text" class="status-text">Compressing...</p>
                             </div>
                             <div id="img-compress-result" class="result-area hidden">
-                                <button id="img-compress-download-btn" class="btn primary">Download Compressed Image</button>
+                                <button id="img-compress-download-btn" class="btn primary">Download Compressed
+                                    Image</button>
                             </div>
                         </div>
                     </div>
@@ -127,10 +153,14 @@
                             <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
                                 📖 How to use Image Compression
                             </summary>
-                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
-                                <p><strong>Step 1:</strong> Optional: Specify exact resize dimensions (Width and Height in px) if needed. Maintain Aspect Ratio is recommended.</p>
-                                <p><strong>Step 2:</strong> Set the Target Size in KB. The tool will automatically find the best quality to fit your target size.</p>
-                                <p><strong>Step 3:</strong> Upload your image (JPG, PNG, JPEG). The local browser optimizer will compress it instantly and provide a download link.</p>
+                            <div
+                                style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Optional: Specify exact resize dimensions (Width and Height
+                                    in px) if needed. Maintain Aspect Ratio is recommended.</p>
+                                <p><strong>Step 2:</strong> Set the Target Size in KB. The tool will automatically find
+                                    the best quality to fit your target size.</p>
+                                <p><strong>Step 3:</strong> Upload your image (JPG, PNG, JPEG). The local browser
+                                    optimizer will compress it instantly and provide a download link.</p>
                             </div>
                         </details>
                     </div>
@@ -149,22 +179,34 @@
                                     <option value="less">Less (High Quality/Larger Size)</option>
                                 </select>
                             </div>
-                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Note: PDF Compression works locally via optimization algorithms. Large files may take time.</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Note: PDF
+                                Compression works locally via optimization algorithms. Large files may take time.</p>
                         </div>
 
                         <div class="card column compress-upload upload-area" id="pdf-compress-upload">
                             <div class="upload-border">
-                                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
                                 <h3>Upload PDF to Compress</h3>
                                 <p>.pdf</p>
                                 <input type="file" id="pdf-compress-file-input" accept="application/pdf" hidden>
                             </div>
                             <div id="pdf-compress-status" class="status-area hidden">
-                                <div class="progress-bar"><div id="pdf-compress-progress" class="progress-fill"></div></div>
+                                <div class="progress-bar">
+                                    <div id="pdf-compress-progress" class="progress-fill"></div>
+                                </div>
                                 <p id="pdf-compress-status-text" class="status-text">Compressing...</p>
                             </div>
                             <div id="pdf-compress-result" class="result-area hidden">
-                                <button id="pdf-compress-download-btn" class="btn primary">Download Compressed PDF</button>
+                                <button id="pdf-compress-download-btn" class="btn primary">Download Compressed
+                                    PDF</button>
                             </div>
                         </div>
                     </div>
@@ -174,10 +216,14 @@
                             <summary style="font-weight: 600; cursor: pointer; color: var(--primary);">
                                 📖 How to use PDF Compression
                             </summary>
-                            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
-                                <p><strong>Step 1:</strong> Select your desired Optimization Level: Recommended, Extreme (smallest size), or Less (higher quality).</p>
-                                <p><strong>Step 2:</strong> Upload your PDF file. Larger files might take a moment to compress because the optimization process runs securely on your local device.</p>
-                                <p><strong>Step 3:</strong> Once compression is complete, click to download the significantly smaller PDF without quality loss.</p>
+                            <div
+                                style="margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                <p><strong>Step 1:</strong> Select your desired Optimization Level: Recommended, Extreme
+                                    (smallest size), or Less (higher quality).</p>
+                                <p><strong>Step 2:</strong> Upload your PDF file. Larger files might take a moment to
+                                    compress because the optimization process runs securely on your local device.</p>
+                                <p><strong>Step 3:</strong> Once compression is complete, click to download the
+                                    significantly smaller PDF without quality loss.</p>
                             </div>
                         </details>
                     </div>
@@ -190,66 +236,110 @@
             <section class="card mt-4 seo-rich-content" style="margin-top: 3rem;">
                 <h2 style="color: var(--primary); margin-bottom: 1rem;">Compress PDF & Images Online for Free</h2>
                 <p style="color: var(--text-color); line-height: 1.6; margin-bottom: 1.5rem;">
-                    Welcome to the most advanced and secure <strong>Free Online Image and PDF Compressor</strong>. Whether you need to reduce a PDF size for an email attachment or compress a JPG to exactly 200KB for an online application, our powerful web-based tool handles it all instantly. There is no need to download heavy software or pay premium subscriptions.
+                    Welcome to the most advanced and secure <strong>Free Online Image and PDF Compressor</strong>.
+                    Whether you need to reduce a PDF size for an email attachment or compress a JPG to exactly 200KB for
+                    an online application, our powerful web-based tool handles it all instantly. There is no need to
+                    download heavy software or pay premium subscriptions.
                 </p>
 
                 <div id="ad-in-content-3" class="ad-slot ad-in-content"></div>
 
-                <h2 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Key Features of Our Image Compressor</h2>
+                <h2 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Key Features of Our Image
+                    Compressor</h2>
                 <ul style="color: var(--text-color); line-height: 1.6; margin-bottom: 1.5rem; padding-left: 1.5rem;">
-                    <li><strong>Target KB Compression:</strong> Easily reduce image size to a specific target (e.g., compress image to 50KB, 100KB, or 200KB) with zero guesswork.</li>
-                    <li><strong>Multi-Format Support:</strong> We fully support compressing JPG, JPEG, and PNG image formats while preserving visual fidelity.</li>
-                    <li><strong>100% Client-Side Privacy:</strong> Your files never leave your device. The compression happens entirely inside your browser, making it completely secure for sensitive documents.</li>
-                    <li><strong>Custom Resizing:</strong> Adjust pixel width and height manually while maintaining the aspect ratio to fit specific upload requirements.</li>
+                    <li><strong>Target KB Compression:</strong> Easily reduce image size to a specific target (e.g.,
+                        compress image to 50KB, 100KB, or 200KB) with zero guesswork.</li>
+                    <li><strong>Multi-Format Support:</strong> We fully support compressing JPG, JPEG, and PNG image
+                        formats while preserving visual fidelity.</li>
+                    <li><strong>100% Client-Side Privacy:</strong> Your files never leave your device. The compression
+                        happens entirely inside your browser, making it completely secure for sensitive documents.</li>
+                    <li><strong>Custom Resizing:</strong> Adjust pixel width and height manually while maintaining the
+                        aspect ratio to fit specific upload requirements.</li>
                 </ul>
 
-                <h2 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">How to Reduce PDF File Size Online</h2>
+                <h2 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">How to Reduce PDF File Size
+                    Online</h2>
                 <p style="color: var(--text-color); line-height: 1.6; margin-bottom: 1.5rem;">
-                    Large PDF files can be difficult to share. Our <strong>PDF Compressor</strong> utilizes advanced optimization algorithms to strip unnecessary metadata and optimize embedded images. Simply select your desired optimization level (Recommended, Extreme, or Less) and upload your file. Our system will immediately generate a reduced PDF file, often cutting the file size by over 70% without noticeably reducing the text or image quality.
+                    Large PDF files can be difficult to share. Our <strong>PDF Compressor</strong> utilizes advanced
+                    optimization algorithms to strip unnecessary metadata and optimize embedded images. Simply select
+                    your desired optimization level (Recommended, Extreme, or Less) and upload your file. Our system
+                    will immediately generate a reduced PDF file, often cutting the file size by over 70% without
+                    noticeably reducing the text or image quality.
                 </p>
 
                 <div id="ad-in-content-4" class="ad-slot ad-in-content"></div>
 
-                <h2 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Frequently Asked Questions (FAQ)</h2>
+                <h2 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Frequently Asked Questions
+                    (FAQ)</h2>
                 <div itemscope itemtype="https://schema.org/FAQPage">
-                    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-                        <h3 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">Is this Image and PDF Compressor really free?</h3>
+                    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+                        style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+                        <h3 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">Is this Image and PDF
+                            Compressor really free?</h3>
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <p itemprop="text" style="color: var(--text-muted); line-height: 1.5;">Yes! Our platform is 100% free to use. There are no hidden fees, no daily limits, and no watermarks placed on your compressed images or PDFs.</p>
+                            <p itemprop="text" style="color: var(--text-muted); line-height: 1.5;">Yes! Our platform is
+                                100% free to use. There are no hidden fees, no daily limits, and no watermarks placed on
+                                your compressed images or PDFs.</p>
                         </div>
                     </div>
-                    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-                        <h3 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">Are my files safe when compressing online?</h3>
+                    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+                        style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+                        <h3 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">Are my files safe when
+                            compressing online?</h3>
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <p itemprop="text" style="color: var(--text-muted); line-height: 1.5;">Absolutely. Unlike other cloud-based services, our compressor uses modern Web APIs to process your files locally on your own device. Your PDFs and images are never uploaded to any external server.</p>
+                            <p itemprop="text" style="color: var(--text-muted); line-height: 1.5;">Absolutely. Unlike
+                                other cloud-based services, our compressor uses modern Web APIs to process your files
+                                locally on your own device. Your PDFs and images are never uploaded to any external
+                                server.</p>
                         </div>
                     </div>
-                    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-                        <h3 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">Can I compress an image to exactly 100KB or 200KB?</h3>
+                    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+                        style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+                        <h3 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">Can I compress an image to
+                            exactly 100KB or 200KB?</h3>
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <p itemprop="text" style="color: var(--text-muted); line-height: 1.5;">Yes! Our Image Compressor includes a unique "Target Size" feature. Just enter your desired KB limit, and the tool will automatically calculate the best quality settings to hit that exact size requirement.</p>
+                            <p itemprop="text" style="color: var(--text-muted); line-height: 1.5;">Yes! Our Image
+                                Compressor includes a unique "Target Size" feature. Just enter your desired KB limit,
+                                and the tool will automatically calculate the best quality settings to hit that exact
+                                size requirement.</p>
                         </div>
                     </div>
-                    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom: 1.5rem;">
-                        <h3 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">Why is my PDF compression taking so long?</h3>
+                    <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"
+                        style="margin-bottom: 1.5rem;">
+                        <h3 itemprop="name" style="margin-bottom: 0.5rem; font-size: 1.1rem;">Why is my PDF compression
+                            taking so long?</h3>
                         <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <p itemprop="text" style="color: var(--text-muted); line-height: 1.5;">Because all processing happens securely inside your browser's memory, extremely large PDFs (over 50MB) may take a few moments to compress depending on your device's processing power. Please be patient.</p>
+                            <p itemprop="text" style="color: var(--text-muted); line-height: 1.5;">Because all
+                                processing happens securely inside your browser's memory, extremely large PDFs (over
+                                50MB) may take a few moments to compress depending on your device's processing power.
+                                Please be patient.</p>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
 
-        <aside class="sidebar-right sidebar"><div id="ad-sidebar-right" class="ad-slot ad-sidebar"></div></aside>
+        <aside class="sidebar-right sidebar">
+            <div id="ad-sidebar-right" class="ad-slot ad-sidebar"></div>
+        </aside>
     </div>
 
     <footer class="app-footer">
         <div id="ad-footer" class="ad-slot ad-footer"></div>
-        <div class="footer-content" style="margin-top: 1rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-            <a href="https://toolbox.nsindia.in/supportpage.html" target="_blank" rel="noopener noreferrer" id="support-btn" style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; padding: 0.65rem 1.6rem; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.35); transition: transform 0.2s ease, box-shadow 0.2s ease; letter-spacing: 0.02em;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 25px rgba(244,63,94,0.45)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(244,63,94,0.35)'">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> Support Us
+        <div class="footer-content"
+            style="margin-top: 1rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+            <a href="https://toolbox.nsindia.in/supportpage.html" target="_blank" rel="noopener noreferrer"
+                id="support-btn"
+                style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; padding: 0.65rem 1.6rem; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 15px rgba(244, 63, 94, 0.35); transition: transform 0.2s ease, box-shadow 0.2s ease; letter-spacing: 0.02em;"
+                onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 25px rgba(244,63,94,0.45)'"
+                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(244,63,94,0.35)'">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg> Support Us
             </a>
-            <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0;">&copy; 2026 Toolbox. All rights reserved. &nbsp;|&nbsp; Made with ❤️ in India</p>
+            <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0;">&copy; 2026 Toolbox. All rights
+                reserved. &nbsp;|&nbsp; Made with ❤️ in India</p>
         </div>
     </footer>
 
@@ -259,7 +349,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
     <script>
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             var pdfjs = window.pdfjsLib || window['pdfjs-dist/build/pdf'];
             if (pdfjs) {
                 window.pdfjsLib = pdfjs;
@@ -281,4 +371,5 @@
     <script src="ads.js" defer></script>
     <script src="app.js" defer></script>
 </body>
+
 </html>
