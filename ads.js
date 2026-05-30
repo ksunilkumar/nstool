@@ -57,9 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
             } else if (inContentCount === 2) {
-                // In-Content 2 → Adsterra Native Banner (lazy)
+                // In-Content 2 → Adsterra Native Banner (PAUSED for AdSense approval)
                 lazyLoad(slot, () => {
-                    injectAdsterra(slot);
+                    // injectAdsterra(slot);
+                    collapseSlot(slot);
                 });
 
             } else {
