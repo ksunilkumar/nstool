@@ -705,5 +705,40 @@ document.addEventListener('DOMContentLoaded', () => {
             supportBtn.parentNode.insertBefore(linksDiv, supportBtn.nextSibling);
         }
     }
-});
 
+    // ---- Cookie Consent Banner ----
+    if (!localStorage.getItem('cookieConsent')) {
+        const banner = document.createElement('div');
+        banner.id = 'cookie-consent-banner';
+        banner.style.cssText = 'position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-secondary); color: var(--text-main); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 9999; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); font-family: "Inter", sans-serif; border-top: 1px solid var(--border);';
+        
+        const text = document.createElement('div');
+        text.style.cssText = 'font-size: 0.95rem; line-height: 1.5; margin-right: 20px; flex: 1;';
+        text.innerHTML = 'We use cookies to personalize content, serve targeted advertisements, and analyze our traffic to provide you with the best experience. By continuing to use our site, you consent to our <a href="privacy.html" style="color: var(--primary); text-decoration: underline;">Privacy Policy</a> and cookie usage.';
+        
+        const btnContainer = document.createElement('div');
+        const btn = document.createElement('button');
+        btn.innerText = 'Accept & Continue';
+        btn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap; transition: background 0.2s;';
+        btn.onmouseover = () => btn.style.background = 'var(--primary-hover)';
+        btn.onmouseout = () => btn.style.background = 'var(--primary)';
+        btn.onclick = () => {
+            localStorage.setItem('cookieConsent', 'true');
+            banner.remove();
+        };
+        btnContainer.appendChild(btn);
+
+        banner.appendChild(text);
+        banner.appendChild(btnContainer);
+        
+        if (window.innerWidth < 600) {
+            banner.style.flexDirection = 'column';
+            banner.style.textAlign = 'center';
+            text.style.marginRight = '0';
+            text.style.marginBottom = '15px';
+            btn.style.width = '100%';
+        }
+        
+        document.body.appendChild(banner);
+    }
+});
