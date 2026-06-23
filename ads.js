@@ -13,9 +13,9 @@
  * ─────────────────────────────────────────────────────────────────
  */
 
-const ADSENSE_CLIENT  = 'ca-pub-3463984380249560';
+const ADSENSE_CLIENT = 'ca-pub-3463984380249560';
 const SLOT_HORIZONTAL = '4359928318';
-const SLOT_VERTICAL   = '3046846648';
+const SLOT_VERTICAL = '3046846648';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (inContentCount === 2) {
                 // In-Content 2 → Adsterra Native Banner (PAUSED for AdSense approval)
                 lazyLoad(slot, () => {
-                    // injectAdsterra(slot);
-                    collapseSlot(slot);
+                    injectAdsterra(slot);
+                    //collapseSlot(slot);
                 });
 
             } else {
@@ -100,9 +100,9 @@ function injectAdsenseInto(el, slotId, label) {
     const ins = document.createElement('ins');
     ins.className = 'adsbygoogle';
     ins.style.display = 'block';
-    ins.dataset.adClient  = ADSENSE_CLIENT;
-    ins.dataset.adSlot    = slotId;
-    ins.dataset.adFormat  = 'auto';
+    ins.dataset.adClient = ADSENSE_CLIENT;
+    ins.dataset.adSlot = slotId;
+    ins.dataset.adFormat = 'auto';
     ins.dataset.fullWidthResponsive = 'true';
     el.appendChild(ins);
 
